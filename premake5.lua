@@ -1,5 +1,5 @@
 workspace "SoftRenderer"
-	-- startproject "Main"
+	startproject "Sandbox"
 	architecture "x64"
 
 
@@ -28,6 +28,11 @@ project "SoftRenderer"
 	targetdir ("bin/" .. outputdir .. "/")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	includedirs
+	{
+		"SoftRenderer/"
+	}
+
 	defines
 	{
 		"BUILD_DLL"
@@ -41,57 +46,36 @@ project "SoftRenderer"
 		defines { "NDEBUG" }
 		optimize "On"
 
--- project "Application"
--- 	location "Application"
--- 	kind "SharedLib"
--- 	language "C++"
--- 	cppdialect "C++17"
--- 	files { "./Application/**.h", "./Application/**.cpp" }
--- 	staticruntime "off"
+project "Sandbox"
+	location "Sandbox"
+	kind "WindowedApp"
+	language "C++"
+	cppdialect "C++17"
+	files { "./Sandbox/**.h", "./Sandbox/**.cpp", "./Sandbox/**.ico", "./Sandbox/**.rc" }
+	staticruntime "off"
    
--- 	targetdir ("bin/" .. outputdir .. "/")
--- 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("bin/" .. outputdir .. "/")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
--- 	defines
--- 	{
--- 		"BUILD_DLL"
--- 	}
+	includedirs
+	{
+		"SoftRenderer/"
+	}
 
--- 	filter { "configurations:Debug" }
--- 		defines { "DEBUG" }
--- 		symbols "On"
+	links
+	{
+		"SoftRenderer"
+	}
 
--- 	filter { "configurations:Release" }
--- 		defines { "NDEBUG" }
--- 		optimize "On"
-   
--- project "Main"
-	-- location "Main"
-	-- kind "ConsoleApp"
-	-- language "C++"
-	-- cppdialect "C++17"
-	-- files { "./Main/**.h", "./Main/**.cpp" }
-	-- staticruntime "off"
+	defines
+	{
 
-	-- targetdir ("bin/" .. outputdir .. "/")
-	-- objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	}
 
-	-- includedirs
-	-- {
-	-- 	"Hello/",
-	-- 	"Application/"
-	-- }
+	filter { "configurations:Debug" }
+		defines { "DEBUG" }
+		symbols "On"
 
-	-- links
-	-- {
-	-- 	"Hello",
-	-- 	"Application"
-	-- }
-
-	-- filter { "configurations:Debug" }
-	-- 	defines { "DEBUG" }
-	-- 	symbols "On"
-
-	-- filter { "configurations:Release" }
-	-- 	defines { "NDEBUG" }
-	-- 	optimize "On"
+	filter { "configurations:Release" }
+		defines { "NDEBUG" }
+		optimize "On"

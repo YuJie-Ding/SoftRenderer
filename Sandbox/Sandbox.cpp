@@ -5,6 +5,8 @@
 #include "Sandbox.h"
 
 #include <sstream>
+#include <ctime>
+#include <iostream>
 
 #define MAX_LOADSTRING 100
 
@@ -110,6 +112,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
+   SetTimer(hWnd,             // handle to main window 
+       NULL,            // timer identifier 
+       1,                 // 0.001-second interval 
+       (TIMERPROC)NULL);     // no timer callback 
+
+   srand(time(0));
+
    return TRUE;
 }
 
@@ -123,6 +132,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 发送退出消息并返回
 //
 //
+
+
+unsigned char* backBuffer = nullptr;
+
+void setPixel(unsigned x, unsigned y, unsigned width, unsigned char r, unsigned char g, unsigned char b)
+{
+    backBuffer[(y * width + x) * 4] = b;
+    backBuffer[(y * width + x) * 4 + 1] = g;
+    backBuffer[(y * width + x) * 4 + 2] = r;
+}
+
+unsigned long long lastTime = GetTickCount64();
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -146,35 +168,75 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
+            unsigned long long  timeNow = GetTickCount64();
+            std::cout << 1000.0 / (timeNow - lastTime) << std::endl;
+            lastTime = timeNow;
             PAINTSTRUCT ps;
 
             // 获取工作区大小
             RECT rect;
             GetClientRect(hWnd, &rect);
-            LONG wigth = rect.right - rect.left;
+            LONG width = rect.right - rect.left;
             LONG height = rect.bottom - rect.top;
+            if (backBuffer == nullptr)
+            {
+                backBuffer = new unsigned char[width * height * 4];
+            }
 
+            ZeroMemory(backBuffer, width * height * 4 * sizeof(unsigned char));
             // 开始绘制
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            HDC mdc = CreateCompatibleDC(hdc);
-            HBITMAP hbmp;
-            hbmp = CreateCompatibleBitmap(mdc, wigth, height);
-            SelectObject(mdc, hbmp);
-            Rectangle(mdc, 100, 100, 200, 200);
-            Rectangle(mdc, 300, 300, 200, 200);
-            SR::Vector3f vec3(5, 6, 7);
-            float vec3Len = vec3.Magnitude();
-            std::ostringstream text;
-            text << vec3.ToString();
-            std::string textStr = text.str();
-            RECT textRect{ 0, 0, 100, 100 };
-            DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
-            BitBlt(hdc, rect.left, rect.top, rect.right, rect.bottom, mdc, 0, 0, SRCCOPY);
+            //HDC mdc = CreateCompatibleDC(hdc);
+            //HBITMAP hbmp;
+            //hbmp = CreateCompatibleBitmap(mdc, width, height);
+            //SelectObject(mdc, hbmp);
+            //Rectangle(mdc, 100, 100, 200, 200);
+            //Rectangle(mdc, 300, 300, 200, 200);
+            //SR::Vector3f vec3(5, 6, 7);
+            //float vec3Len = vec3.Magnitude();
+            //std::ostringstream text;
+            //text << vec3.ToString();
+            //std::string textStr = text.str();
+            //RECT textRect{ 0, 0, 100, 100 };
+            //DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
+            //BitBlt(hdc, rect.left, rect.top, rect.right, rect.bottom, mdc, 0, 0, SRCCOPY);
+
+
+            BITMAPINFO bitmapInfo;
+            ZeroMemory(&bitmapInfo, sizeof(BITMAPINFO));
+            bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+            bitmapInfo.bmiHeader.biWidth = width;
+            bitmapInfo.bmiHeader.biHeight = height;
+            bitmapInfo.bmiHeader.biPlanes = 1;
+            bitmapInfo.bmiHeader.biBitCount = 32;
+            bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+            for (unsigned int i = 0; i < width; i++)
+            {
+                for (unsigned int j = 0; j < height; j++)
+                {
+                    setPixel(i, j, width, 255, 255, 0);
+                }
+            }
+
+            StretchDIBits(hdc,
+                0, 0, width, height,
+                0, height, width, -height,
+                backBuffer,
+                &bitmapInfo,
+                DIB_RGB_COLORS,
+                SRCCOPY);
 
             // 绘制结束
             EndPaint(hWnd, &ps);
         }
+        break;
+    case WM_TIMER:
+        RECT rect;
+        GetClientRect(hWnd, &rect);
+        InvalidateRect(hWnd, &rect, FALSE);
+        UpdateWindow(hWnd);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);

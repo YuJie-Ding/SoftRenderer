@@ -3,6 +3,8 @@ x64/
 vendor/
 bin/
 bin-int/
+softRasterizer-main/
+*.zip
 
 # vs2022 project files
 *.vcxproj

@@ -187,21 +187,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // 开始绘制
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            //HDC mdc = CreateCompatibleDC(hdc);
-            //HBITMAP hbmp;
-            //hbmp = CreateCompatibleBitmap(mdc, width, height);
-            //SelectObject(mdc, hbmp);
-            //Rectangle(mdc, 100, 100, 200, 200);
-            //Rectangle(mdc, 300, 300, 200, 200);
-            //SR::Vector3f vec3(5, 6, 7);
-            //float vec3Len = vec3.Magnitude();
-            //std::ostringstream text;
-            //text << vec3.ToString();
-            //std::string textStr = text.str();
-            //RECT textRect{ 0, 0, 100, 100 };
-            //DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
-            //BitBlt(hdc, rect.left, rect.top, rect.right, rect.bottom, mdc, 0, 0, SRCCOPY);
-
+            HDC mdc = CreateCompatibleDC(hdc);
 
             BITMAPINFO bitmapInfo;
             ZeroMemory(&bitmapInfo, sizeof(BITMAPINFO));
@@ -220,7 +206,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
             }
 
-            StretchDIBits(hdc,
+            StretchDIBits(mdc,
                 0, 0, width, height,
                 0, height, width, -height,
                 backBuffer,
@@ -228,6 +214,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DIB_RGB_COLORS,
                 SRCCOPY);
 
+
+            HBITMAP hbmp;
+            hbmp = CreateCompatibleBitmap(mdc, width, height);
+            SelectObject(mdc, hbmp);
+            Rectangle(mdc, 100, 100, 200, 200);
+            Rectangle(mdc, 300, 300, 200, 200);
+            SR::Vector4f vec4(5, 6, 7, 8);
+            float vec4Len = vec4.Magnitude();
+            std::ostringstream text;
+            text << vec4.ToString();
+            std::string textStr = text.str();
+            RECT textRect{ 10, 10, 100, 100 };
+            DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
+
+            BitBlt(hdc, rect.left, rect.top, rect.right, rect.bottom, mdc, 0, 0, SRCCOPY);
             // 绘制结束
             EndPaint(hWnd, &ps);
         }

@@ -1,10 +1,13 @@
 x64/
 .vs/
 vendor/
+bin/
+bin-int/
 
+# vs2022 project files
 *.vcxproj
-.vcxproj.filters
-.vcxproj.user
+*.vcxproj.filters
+*.vcxproj.user
 *.sln
 
 # Prerequisites

@@ -8,6 +8,8 @@
 #include <ctime>
 #include <iostream>
 
+#include "Render.h"
+
 #define MAX_LOADSTRING 100
 
 // 全局变量:
@@ -30,7 +32,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 在此处放置代码。
-
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_SANDBOX, szWindowClass, MAX_LOADSTRING);
@@ -41,6 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return FALSE;
     }
+    
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_SANDBOX));
 
@@ -119,6 +123,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    srand(time(0));
 
+   OnInit(hWnd);
+
    return TRUE;
 }
 
@@ -134,14 +140,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 
 
-unsigned char* backBuffer = nullptr;
 
-void setPixel(unsigned x, unsigned y, unsigned width, unsigned char r, unsigned char g, unsigned char b)
-{
-    backBuffer[(y * width + x) * 4] = b;
-    backBuffer[(y * width + x) * 4 + 1] = g;
-    backBuffer[(y * width + x) * 4 + 2] = r;
-}
 
 unsigned long long lastTime = GetTickCount64();
 
@@ -168,9 +167,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
-            unsigned long long  timeNow = GetTickCount64();
-            std::cout << 1000.0 / (timeNow - lastTime) << std::endl;
-            lastTime = timeNow;
+
             PAINTSTRUCT ps;
 
             // 获取工作区大小
@@ -186,58 +183,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             ZeroMemory(backBuffer, width * height * 4 * sizeof(unsigned char));
             // 开始绘制
             HDC hdc = BeginPaint(hWnd, &ps);
+            unsigned long long  timeNow = GetTickCount64();
+        // ------------------------------------ //
+            OnWinPaint(hdc, timeNow, lastTime, width, height);
+        // ------------------------------------ //
+            lastTime = timeNow;
 
-            HDC mdc = CreateCompatibleDC(hdc);
-
-            BITMAPINFO bitmapInfo;
-            ZeroMemory(&bitmapInfo, sizeof(BITMAPINFO));
-            bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-            bitmapInfo.bmiHeader.biWidth = width;
-            bitmapInfo.bmiHeader.biHeight = height;
-            bitmapInfo.bmiHeader.biPlanes = 1;
-            bitmapInfo.bmiHeader.biBitCount = 32;
-            bitmapInfo.bmiHeader.biCompression = BI_RGB;
-
-            for (unsigned int i = 0; i < width; i++)
-            {
-                for (unsigned int j = 0; j < height; j++)
-                {
-                    setPixel(i, j, width, 255, 255, 0);
-                }
-            }
-
-            StretchDIBits(mdc,
-                0, 0, width, height,
-                0, height, width, -height,
-                backBuffer,
-                &bitmapInfo,
-                DIB_RGB_COLORS,
-                SRCCOPY);
-
-
-            HBITMAP hbmp;
-            hbmp = CreateCompatibleBitmap(mdc, width, height);
-            SelectObject(mdc, hbmp);
-            Rectangle(mdc, 100, 100, 200, 200);
-            Rectangle(mdc, 300, 300, 200, 200);
-            SR::Vector4f vec4(5, 6, 7, 8);
-            float vec4Len = vec4.Magnitude();
-            std::ostringstream text;
-            text << vec4.ToString();
-            std::string textStr = text.str();
-            RECT textRect{ 10, 10, 100, 100 };
-            DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
-
-            BitBlt(hdc, rect.left, rect.top, rect.right, rect.bottom, mdc, 0, 0, SRCCOPY);
             // 绘制结束
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_TIMER:
-        RECT rect;
-        GetClientRect(hWnd, &rect);
-        InvalidateRect(hWnd, &rect, FALSE);
-        UpdateWindow(hWnd);
+        OnTimer(hWnd, message, wParam, lParam);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);

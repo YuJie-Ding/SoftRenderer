@@ -31,6 +31,13 @@ SR::Vector2f SR::Vector2f::operator/(const float k) const
     return Vector2f(x / k, y / k);
 }
 
+SR::Vector2f& SR::Vector2f::operator*=(const float k)
+{
+    x *= k;
+    y *= k;
+    return *this;
+}
+
 SR::Vector2f SR::Vector2f::operator+() const
 {
     return *this;
@@ -39,6 +46,32 @@ SR::Vector2f SR::Vector2f::operator+() const
 SR::Vector2f SR::Vector2f::operator-() const
 {
     return Vector2f(-x, -y);
+}
+
+float& SR::Vector2f::operator[](unsigned int index)
+{
+    switch (index)
+    {
+    case 0:
+        return x;
+    case 1:
+        return y;
+    default:
+        assert(false);
+    }
+}
+
+const float& SR::Vector2f::operator[](unsigned int index) const
+{
+    switch (index)
+    {
+    case 0:
+        return x;
+    case 1:
+        return y;
+    default:
+        assert(false);
+    }
 }
 
 float SR::Vector2f::Dot(const Vector2f& v) const

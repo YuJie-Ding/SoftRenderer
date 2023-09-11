@@ -1,13 +1,39 @@
+#include "Vector2f.h"
+#include "Vector3f.h"
 #include "Vector4f.h"
 #include <assert.h>
 #include <cmath>
 #include <sstream>
+
+SR::Vector4f::Vector4f()
+{
+	x = 0.0f;
+	y = 0.0f;
+	z = 0.0f;
+	w = 0.0f;
+}
 
 SR::Vector4f::Vector4f(const float x_, const float y_, const float z_, const float w_)
 {
 	x = x_;
 	y = y_;
 	z = z_;
+	w = w_;
+}
+
+SR::Vector4f::Vector4f(const Vector2f& vec3, const float z_, const float w_)
+{
+	x = vec3.x;
+	y = vec3.y;
+	z = z_;
+	w = w_;
+}
+
+SR::Vector4f::Vector4f(const Vector3f& vec3, const float w_)
+{
+	x = vec3.x;
+	y = vec3.y;
+	z = vec3.z;
 	w = w_;
 }
 
@@ -33,6 +59,15 @@ SR::Vector4f SR::Vector4f::operator/(const float k) const
 	return Vector4f(x / k, y / k, z / k, w / k);
 }
 
+SR::Vector4f& SR::Vector4f::operator*=(const float k) 
+{
+	x *= k;
+	y *= k;
+	z *= k;
+	w *= k;
+	return *this;
+}
+
 SR::Vector4f SR::Vector4f::operator+() const
 {
 	return *this;
@@ -41,6 +76,40 @@ SR::Vector4f SR::Vector4f::operator+() const
 SR::Vector4f SR::Vector4f::operator-() const
 {
 	return Vector4f(-x, -y, -z, -w);
+}
+
+float& SR::Vector4f::operator[](unsigned int index)
+{
+	switch (index)
+	{
+	case 0:
+		return x;
+	case 1:
+		return y;
+	case 2:
+		return z;
+	case 3:
+		return w;
+	default:
+		assert(false);
+	}
+}
+
+const float& SR::Vector4f::operator[](unsigned int index) const
+{
+	switch (index)
+	{
+	case 0:
+		return x;
+	case 1:
+		return y;
+	case 2:
+		return z;
+	case 3:
+		return w;
+	default:
+		assert(false);
+	}
 }
 
 float SR::Vector4f::Dot(const Vector4f& v) const

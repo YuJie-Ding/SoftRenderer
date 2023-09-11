@@ -16,10 +16,13 @@ namespace SR
 		Vector2f operator-(const Vector2f& v) const;
 		Vector2f operator*(const float k) const;
 		Vector2f operator/(const float k) const;
+		Vector2f& operator*=(const float k);
 
 		Vector2f operator+() const;
 		Vector2f operator-() const;
 
+		float& operator[](unsigned int index);
+		const float& operator[](unsigned int index) const;
 
 		float Dot(const Vector2f& v) const;
 		Vector2f Normalize() const;

@@ -1,3 +1,4 @@
+#include "Vector2f.h"
 #include "Vector3f.h"
 #include <assert.h>
 #include <cmath>
@@ -7,6 +8,13 @@ SR::Vector3f::Vector3f(const float x_, const float y_, const float z_)
 {
     x = x_;
     y = y_;
+    z = z_;
+}
+
+SR::Vector3f::Vector3f(const Vector2f& vec2, const float z_)
+{
+    x = vec2.x;
+    y = vec2.y;
     z = z_;
 }
 
@@ -32,6 +40,14 @@ SR::Vector3f SR::Vector3f::operator/(const float k) const
     return Vector3f(x / k, y / k, z / k);
 }
 
+SR::Vector3f& SR::Vector3f::operator*=(const float k)
+{
+    x *= k;
+    y *= k;
+    z *= k;
+    return *this;
+}
+
 SR::Vector3f SR::Vector3f::operator+() const
 {
     return *this;
@@ -40,6 +56,36 @@ SR::Vector3f SR::Vector3f::operator+() const
 SR::Vector3f SR::Vector3f::operator-() const
 {
     return Vector3f(-x, -y, -z);
+}
+
+float& SR::Vector3f::operator[](unsigned int index)
+{
+    switch (index)
+    {
+    case 0:
+        return x;
+    case 1:
+        return y;
+    case 2:
+        return z;
+    default:
+        assert(false);
+    }
+}
+
+const float& SR::Vector3f::operator[](unsigned int index) const
+{
+    switch (index)
+    {
+    case 0:
+        return x;
+    case 1:
+        return y;
+    case 2:
+        return z;
+    default:
+        assert(false);
+    }
 }
 
 float SR::Vector3f::Dot(const Vector3f& v) const

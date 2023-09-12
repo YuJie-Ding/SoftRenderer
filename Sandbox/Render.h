@@ -1,8 +1,10 @@
 #pragma once
+#include "SR.h"
 
 void OnInit(HWND hWnd)
 {
-	// TODO: load model°¢texture£¨init renderer,
+	// TODO: load model„ÄÅtextureÔºåinit renderer,
+    SR::Model_Obj cube = SR::LoadObjFromFile(".\\assets\\cube.obj");
 }
 
 

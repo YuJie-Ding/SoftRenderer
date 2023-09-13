@@ -3,6 +3,12 @@
 #include <sstream>
 #include <cmath>
 
+SR::Vector2f::Vector2f()
+{
+    x = 0.0f;
+    y = 0.0f;
+}
+
 SR::Vector2f::Vector2f(const float x_, const float y_)
 {
     x = x_;

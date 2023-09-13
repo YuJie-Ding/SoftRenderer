@@ -9,9 +9,9 @@ namespace SR
 	class DLL_API Vector3f
 	{
 	public:
-		Vector3f() = delete;
+		Vector3f();
 		Vector3f(const float x_, const float y_, const float z_);
-		Vector3f(const Vector2f& vec2, const float z_);
+		Vector3f(const Vector2f& vec2, const float z_ = 0.0f);
 		~Vector3f() { }
 
 		Vector3f operator+(const Vector3f& v) const;
@@ -19,6 +19,7 @@ namespace SR
 		Vector3f operator*(const float k) const;
 		Vector3f operator/(const float k) const;
 		Vector3f& operator*=(const float k);
+		Vector3f& operator=(const Vector3f& v);
 
 		Vector3f operator+() const;
 		Vector3f operator-() const;

@@ -4,6 +4,13 @@
 #include <cmath>
 #include <sstream>
 
+SR::Vector3f::Vector3f()
+{
+    x = 0.0f;
+    y = 0.0f;
+    z = 0.0f;
+}
+
 SR::Vector3f::Vector3f(const float x_, const float y_, const float z_)
 {
     x = x_;
@@ -45,6 +52,16 @@ SR::Vector3f& SR::Vector3f::operator*=(const float k)
     x *= k;
     y *= k;
     z *= k;
+    return *this;
+}
+
+SR::Vector3f& SR::Vector3f::operator=(const Vector3f& v)
+{
+    if (&v == this)
+        return *this;
+    x = v.x;
+    y = v.y;
+    z = v.z;
     return *this;
 }
 

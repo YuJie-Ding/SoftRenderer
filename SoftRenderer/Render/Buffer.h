@@ -94,6 +94,7 @@ namespace SR
 		const BufferLayout& GetLayout() const { return m_Layout; }
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
 		void BufferData(void* data, uint32_t size);
+		const void* GetVertexData(uint32_t vertexIndex, uint32_t attriIndex) const;
 	private:
 		BufferLayout m_Layout;
 		void* m_data;
@@ -119,6 +120,7 @@ namespace SR
 
 		uint32_t GetCount() const { return m_Count; }
 		void BufferData(uint32_t* data, uint32_t count);
+		uint32_t GetIndex(uint32_t i) const;
 	private:
 		uint32_t m_Count;
 		uint32_t* m_data;

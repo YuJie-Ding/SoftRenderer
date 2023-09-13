@@ -51,7 +51,7 @@ Matrix4x4f SR::Matrix4x4f::operator*(const Matrix4x4f& m1) const
 		for (int j = 0; j < 4; j++)
 		{
 			for(int k = 0; k < 4; k++)
-				m[i][j] += mat[i][k] * m[k][j];
+				m[i][j] += mat[i][k] * m1[k][j];
 		}
 	}
 	return m;
@@ -184,4 +184,16 @@ std::string SR::Matrix4x4f::ToString() const
 Matrix4x4f SR::Dot(const Matrix4x4f& mat1, const Matrix4x4f& mat2)
 {
 	return mat1 * mat2;
+}
+
+Matrix4x4f SR::GetProjMatrix(float aspect, float FOV)
+{
+	Matrix4x4f projMat = Matrix4x4f::Indentity();
+	float cotFOV_2 = 1 / tan(FOV * PI / 90.0f);
+	projMat[0][0] = cotFOV_2 / aspect;
+	projMat[1][1] = cotFOV_2;
+	//projMat[3][3] = 0.0f;
+	//projMat[3][2] = 1.0f;
+	//projMat[2][3] = 2.0f;
+	return projMat;
 }

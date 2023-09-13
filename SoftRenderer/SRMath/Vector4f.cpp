@@ -52,6 +52,12 @@ SR::Vector4f SR::Vector4f::operator*(const float k) const
 	return Vector4f(x * k, y * k, z * k, w * k);
 }
 
+SR::Vector4f SR::Vector4f::operator*(const Matrix4x4f& mat) const
+{
+	assert(false);
+	return Vector4f();
+}
+
 SR::Vector4f SR::Vector4f::operator/(const float k) const
 {
 	if (k == 0)
@@ -130,7 +136,7 @@ float SR::Vector4f::Magnitude() const
 	return sqrt(x * x + y * y + z * z + w * w);
 }
 
-std::string SR::Vector4f::ToString()
+std::string SR::Vector4f::ToString() const
 {
 	std::ostringstream ostr;
 	ostr << "Vector4f(" << x << ", " << y << ", " << z << ", " << w << ")";

@@ -1,10 +1,25 @@
 #pragma once
 #include "SR.h"
 
+SR::Renderer renderer;
+SR::RenderObject objCube;
+SR::VertexShader vShader;
+
 void OnInit(HWND hWnd)
 {
 	// TODO: load model、texture，init renderer,
-    SR::Model_Obj cube = SR::LoadObjFromFile(".\\assets\\cube.obj");
+    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
+    objCube.m_ib = modelCube.ib;
+    objCube.m_vb = modelCube.vb;
+    objCube.m_name = modelCube.name;
+
+    SR::Translation cubeTranslation;
+    cubeTranslation.m_position = { 0.5, 0.5, -3.0 };
+    cubeTranslation.m_rotation = { 0.0, 0.0, 0.0 };
+    cubeTranslation.m_scaling = { 1.0f, 1.0f, 1.0f };
+
+    objCube.m_translation = cubeTranslation;
+
 }
 
 
@@ -53,9 +68,23 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
         &bitmapInfo,
         DIB_RGB_COLORS,
         SRCCOPY);
+    vShader.model_Mat = SR::Matrix4x4f::Translation(objCube.m_translation.m_position);
+    vShader.view_Mat = SR::Matrix4x4f::Indentity();
+    vShader.proj_Mat = SR::GetProjMatrix(1.0, 60);
+    std::vector<SR::Vertex> vertexes = renderer.OnRender(objCube, vShader);
 
-    Rectangle(mdc, 100, 100, 200, 200);
-    Rectangle(mdc, 300, 300, 200, 200);
+    for (auto& vertex : vertexes)
+    {
+        float x = (vertex.position.x + 1.0) / 2 * height;
+        float y = (vertex.position.y + 1.0) / 2 * height;
+        std::cout << "(" << x << "," << y << ")" << " ";
+        std::cout << vertex.position.ToString() << std::endl;
+        Rectangle(mdc, x - 5, y - 5, x + 5, y + 5);
+    }
+    //std::cout << std::endl;
+
+    //Rectangle(mdc, 100, 100, 200, 200);
+    //Rectangle(mdc, 300, 300, 200, 200);
 
     SR::Vector4f vec4(5, 6, 7, 8);
     float vec4Len = vec4.Magnitude();
@@ -63,15 +92,14 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     text << vec4.ToString();
     std::string textStr = text.str();
     RECT textRect{ 10, 10, 100, 100 };
-    DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
+    //DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
 
     BitBlt(hdc, 0, 0, width, height, mdc, 0, 0, SRCCOPY);
     SelectObject(mdc, oldBitmap);
     DeleteDC(mdc);
     DeleteObject(mdc);
 
-
-	//TODO: set shader uniform and draw call
+    
 }
 
 void OnWindowSize()

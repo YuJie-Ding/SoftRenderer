@@ -116,6 +116,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
+   OnInit(hWnd);
+
    SetTimer(hWnd,             // handle to main window 
        NULL,            // timer identifier 
        1,                 // 0.001-second interval 
@@ -123,7 +125,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    srand(time(0));
 
-   OnInit(hWnd);
 
    return TRUE;
 }

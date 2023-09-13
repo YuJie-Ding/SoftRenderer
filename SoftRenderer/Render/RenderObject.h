@@ -1,17 +1,26 @@
 #pragma once
 
+
+#include "core.h"
 #include "Buffer.h"
+#include "Translation.h"
+#include <memory>
 
 namespace SR
 {
 
-	class RenderObject
+	class DLL_API RenderObject
 	{
 	public:
-		std::string name;
-		VertexBuffer* vb;
-		IndexBuffer* ib;
-		// TODO: transfrom component;
+		RenderObject();
+		RenderObject(std::string name, std::shared_ptr<VertexBuffer> vb,
+			std::shared_ptr<IndexBuffer> ib, const Translation&& translation);
+
+	public:
+		std::string m_name;
+		std::shared_ptr<VertexBuffer> m_vb;
+		std::shared_ptr<IndexBuffer> m_ib;
+		Translation m_translation;
 	};
 
 }

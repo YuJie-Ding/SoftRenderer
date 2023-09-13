@@ -8,7 +8,7 @@ namespace SR
 	class DLL_API Vector2f
 	{
 	public:
-		Vector2f() = delete;
+		Vector2f();
 		Vector2f(const float x_, const float y_);
 		~Vector2f() { }
 

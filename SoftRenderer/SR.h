@@ -3,3 +3,8 @@
 
 #include "SRMath/SRMath.h"
 #include "Asset/ResourceManager.h"
+
+#include "Render/RenderObject.h"
+#include "Render/Translation.h"
+#include "Render/VertexShader.h"
+#include "Render/Renderer.h"

@@ -125,9 +125,9 @@ Matrix4x4f SR::Matrix4x4f::Translation(const Vector3f& vec)
 Matrix4x4f SR::Matrix4x4f::Rotation(float angle, Axis axis)
 {
 	Matrix4x4f m = Indentity();
-	float rad = PI / 180.0f * angle;
-	float sinA = sin(angle);
-	float cosA = cos(angle);
+	float rad = angle * PI / 180.0f;
+	float sinA = sin(rad);
+	float cosA = cos(rad);
 	switch (axis)
 	{
 	case SR::Axis::Axis_X:
@@ -189,11 +189,11 @@ Matrix4x4f SR::Dot(const Matrix4x4f& mat1, const Matrix4x4f& mat2)
 Matrix4x4f SR::GetProjMatrix(float aspect, float FOV)
 {
 	Matrix4x4f projMat = Matrix4x4f::Indentity();
-	float cotFOV_2 = 1 / tan(FOV * PI / 90.0f);
+	float cotFOV_2 = 1 / tan(FOV * PI / 360.0f);
 	projMat[0][0] = cotFOV_2 / aspect;
 	projMat[1][1] = cotFOV_2;
 	//projMat[3][3] = 0.0f;
 	//projMat[3][2] = 1.0f;
-	//projMat[2][3] = 2.0f;
+	//projMat[2][3] = (2.0f * 0.3 * 1000.0f) / (1000.0f - 0.3);
 	return projMat;
 }

@@ -1,37 +1,44 @@
 #pragma once
 #include "SR.h"
+#include "windows.h"
 
-SR::Renderer renderer;
+
 SR::RenderObject objCube;
 SR::VertexShader vShader;
 
 void OnInit(HWND hWnd)
 {
+    RECT rect;
+    GetClientRect(hWnd, &rect); 
+    LONG width = rect.right - rect.left;
+    LONG height = rect.bottom - rect.top;
+
 	// TODO: load model、texture，init renderer,
-    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
+    SR::Renderer* render = SR::Renderer::Create();
+    render->Init(width, height);
+
+
+    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\skull_low_poly.obj");
     objCube.m_ib = modelCube.ib;
     objCube.m_vb = modelCube.vb;
     objCube.m_name = modelCube.name;
 
+    for (unsigned int i = 0; i < objCube.m_ib->GetCount(); i++)
+    {
+        unsigned int index = objCube.m_ib->GetIndex(i);
+        const float* pObjPosition = (const float*)objCube.m_vb->GetVertexData(index, 0);
+        SR::Vector4f ObjPosition = { pObjPosition[0], pObjPosition[1], pObjPosition[2], 1.0f };
+    }
+
     SR::Translation cubeTranslation;
-    cubeTranslation.m_position = { 0.5, 0.5, -3.0 };
-    cubeTranslation.m_rotation = { 0.0, 0.0, 0.0 };
-    cubeTranslation.m_scaling = { 1.0f, 1.0f, 1.0f };
+    cubeTranslation.m_position = { 0, 0, 3.0 };
+    cubeTranslation.m_rotation = { 45, 25, 15 };
+    cubeTranslation.m_scaling = { 0.001, 0.001, 0.001 };
 
     objCube.m_translation = cubeTranslation;
 
 }
 
-
-unsigned char* backBuffer = nullptr;
-
-void setPixel(unsigned x, unsigned y, unsigned width, unsigned char r, unsigned char g, unsigned char b, unsigned int a)
-{
-    backBuffer[(y * width + x) * 4] = b;
-    backBuffer[(y * width + x) * 4 + 1] = g;
-    backBuffer[(y * width + x) * 4 + 2] = r;
-    backBuffer[(y * width + x) * 4 + 3] = a;
-}
 
 void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime, int width, int height)
 {
@@ -53,64 +60,43 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     bitmapInfo.bmiHeader.biSizeImage = width * height * 4;
 
 
-    for (unsigned int i = 0; i < width; i++)
-    {
-        for (unsigned int j = 0; j < height; j++)
-        {
-            setPixel(i, j, width, 128, 100, 200, 0);
-        }
-    }
+    float timeIntetval = timeNow - lastTime;
+    objCube.m_translation.m_rotation.x += timeIntetval / 20.0f;
+    objCube.m_translation.m_rotation.y += timeIntetval / 9.0f;
 
+    vShader.model_Mat = SR::Matrix4x4f::Translation(objCube.m_translation.m_position) * 
+        SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.z, SR::Axis::Axis_Z) *
+        SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.y, SR::Axis::Axis_Y) *
+        SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.x, SR::Axis::Axis_X) *
+        SR::Matrix4x4f::Scale(objCube.m_translation.m_scaling);
+    vShader.view_Mat = SR::Matrix4x4f::Indentity();
+    vShader.proj_Mat = SR::GetProjMatrix(1.0, 60);
+    auto frameBuffer = SR::Renderer::GetInstance()->OnRender(objCube, vShader);
+    const void* colorData = frameBuffer->GetColorData();
     StretchDIBits(mdc,
         0, 0, width, height,
         0, height, width, -height,
-        backBuffer,
+        colorData,
         &bitmapInfo,
         DIB_RGB_COLORS,
         SRCCOPY);
-    vShader.model_Mat = SR::Matrix4x4f::Translation(objCube.m_translation.m_position);
-    vShader.view_Mat = SR::Matrix4x4f::Indentity();
-    vShader.proj_Mat = SR::GetProjMatrix(1.0, 60);
-    std::vector<SR::Vertex> vertexes = renderer.OnRender(objCube, vShader);
-
-    for (auto& vertex : vertexes)
-    {
-        float x = (vertex.position.x + 1.0) / 2 * height;
-        float y = (vertex.position.y + 1.0) / 2 * height;
-        std::cout << "(" << x << "," << y << ")" << " ";
-        std::cout << vertex.position.ToString() << std::endl;
-        Rectangle(mdc, x - 5, y - 5, x + 5, y + 5);
-    }
-    //std::cout << std::endl;
-
-    //Rectangle(mdc, 100, 100, 200, 200);
-    //Rectangle(mdc, 300, 300, 200, 200);
-
-    SR::Vector4f vec4(5, 6, 7, 8);
-    float vec4Len = vec4.Magnitude();
-    std::ostringstream text;
-    text << vec4.ToString();
-    std::string textStr = text.str();
-    RECT textRect{ 10, 10, 100, 100 };
-    //DrawTextA(mdc, textStr.c_str(), textStr.size(), &textRect, DT_CENTER);
 
     BitBlt(hdc, 0, 0, width, height, mdc, 0, 0, SRCCOPY);
     SelectObject(mdc, oldBitmap);
     DeleteDC(mdc);
-    DeleteObject(mdc);
+    DeleteObject(hbmp);
+    DeleteObject(oldBitmap);
 
     
 }
 
-void OnWindowSize()
+void OnWindowSize(int width, int height)
 {
-	// TODO: update paint rect
+    SR::Renderer::GetInstance()->ReSize(width, height);
 }
 
-void OnTimer(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+void OnTimer(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, const RECT& rect)
 {
-	RECT rect;
-	GetClientRect(hWnd, &rect);
 	InvalidateRect(hWnd, &rect, FALSE);
 	UpdateWindow(hWnd);
 }

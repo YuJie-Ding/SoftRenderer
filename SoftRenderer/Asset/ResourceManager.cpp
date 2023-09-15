@@ -54,8 +54,11 @@ SR::Model_Obj SR::LoadObjFromFile(std::string filePath)
 	};
 	std::vector<Vertex> vertexes; // 重组后的顶点数据
 	int count = 0;
+	int n = 0;
 	while (std::getline(objFileStream, line))
 	{
+		if (line == "")
+			continue;
 		auto splitLine = SplitString(line, ' ');
 		std::string attr = splitLine[0];
 
@@ -96,13 +99,16 @@ SR::Model_Obj SR::LoadObjFromFile(std::string filePath)
 			{
 				auto splitIndex = SplitString(splitLine[i], '/');
 				int posIndex = atoi(splitIndex[0].c_str());
-				int uvIndex = atoi(splitIndex[1].c_str());
-				int norIndex = atoi(splitIndex[2].c_str());
+				int uvIndex = splitIndex.size() > 1 ? atoi(splitIndex[1].c_str()) : 0;
+				int norIndex = splitIndex.size() > 2 ? atoi(splitIndex[2].c_str()) : 0;
 				auto existed = std::find(indexData.begin(), indexData.end(), Index{ posIndex, norIndex, uvIndex });
 				if (indexData.end() == existed)
 				{
 					indexData.push_back({ posIndex, norIndex, uvIndex, count++ });
-					vertexes.push_back({ positionData[posIndex - 1], normalData[norIndex - 1], uvData[uvIndex - 1] });
+					vertexes.push_back({ positionData[posIndex - 1], 
+										(norIndex == 0) ? SR::Vector3f() : normalData[norIndex - 1],
+										(uvIndex == 0) ? SR::Vector2f() : (uvData[uvIndex - 1])
+									});
 				}
 				else
 				{
@@ -112,8 +118,9 @@ SR::Model_Obj SR::LoadObjFromFile(std::string filePath)
 		}
 		else
 		{
-			std::cout << "unknow .obj attr";
+			std::cout << "unknow .obj attr: " << attr << std::endl;
 		}
+		n++;
 	}
 	SR_ASSERT(indexData.size(), "num of index is 0");
 
@@ -131,5 +138,6 @@ SR::Model_Obj SR::LoadObjFromFile(std::string filePath)
 		{ SR::BufferDataType::Float3, "vertexNormal" },
 		{ SR::BufferDataType::Float2, "vertexUV" }
 	});
+	std::cout << "load obj file successfully\n";
 	return obj;
 }

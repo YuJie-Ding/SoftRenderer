@@ -16,6 +16,7 @@
 HINSTANCE hInst;                                // 当前实例
 WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
 WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
+static bool isInit = false;
 
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -117,13 +118,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    UpdateWindow(hWnd);
 
    OnInit(hWnd);
+   isInit = true;
 
-   SetTimer(hWnd,             // handle to main window 
-       NULL,            // timer identifier 
-       1,                 // 0.001-second interval 
-       (TIMERPROC)NULL);     // no timer callback 
 
-   srand(time(0));
+   //srand(time(0));
 
 
    return TRUE;
@@ -144,6 +142,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 
 unsigned long long lastTime = GetTickCount64();
+RECT rect;
+LONG width;
+LONG height;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -166,36 +167,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_CREATE:
+        GetClientRect(hWnd, &rect);
+        SetTimer(hWnd,             // handle to main window 
+            NULL,            // timer identifier 
+            1,                 // 0.001-second interval 
+            (TIMERPROC)NULL);     // no timer callback 
+        break;
     case WM_PAINT:
         {
-
+            if (!isInit)
+                break;
             PAINTSTRUCT ps;
 
-            // 获取工作区大小
-            RECT rect;
-            GetClientRect(hWnd, &rect);
-            LONG width = rect.right - rect.left;
-            LONG height = rect.bottom - rect.top;
-            if (backBuffer == nullptr)
-            {
-                backBuffer = new unsigned char[width * height * 4];
-            }
-
-            ZeroMemory(backBuffer, width * height * 4 * sizeof(unsigned char));
             // 开始绘制
             HDC hdc = BeginPaint(hWnd, &ps);
             unsigned long long  timeNow = GetTickCount64();
-        // ------------------------------------ //
+            // ------------------------------------ //
             OnWinPaint(hdc, timeNow, lastTime, width, height);
-        // ------------------------------------ //
+            // ------------------------------------ //
             lastTime = timeNow;
 
             // 绘制结束
             EndPaint(hWnd, &ps);
         }
         break;
-    case WM_TIMER:
-        OnTimer(hWnd, message, wParam, lParam);
+    case WM_SIZE:
+        if (!isInit)
+            break;
+        GetClientRect(hWnd, &rect);
+        width = rect.right - rect.left;
+        height = rect.bottom - rect.top;
+        OnWindowSize(width, height);
+        break;
+    case WM_TIMER:        
+        if (!isInit)
+            break;
+        OnTimer(hWnd, message, wParam, lParam, rect);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);

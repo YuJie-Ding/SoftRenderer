@@ -12,11 +12,17 @@
 
 #define MAX_LOADSTRING 100
 
+
 // 全局变量:
 HINSTANCE hInst;                                // 当前实例
 WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
 WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
 static bool isInit = false;
+
+unsigned long long lastTime = GetTickCount64();
+RECT rect;
+LONG width;
+LONG height;
 
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -119,6 +125,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    OnInit(hWnd);
    isInit = true;
+   GetClientRect(hWnd, &rect);
+   width = rect.right - rect.left;
+   height = rect.bottom - rect.top;
+   OnWindowSize(width, height);
 
 
    //srand(time(0));
@@ -141,10 +151,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 
 
-unsigned long long lastTime = GetTickCount64();
-RECT rect;
-LONG width;
-LONG height;
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -187,7 +194,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             OnWinPaint(hdc, timeNow, lastTime, width, height);
             // ------------------------------------ //
             lastTime = timeNow;
-
+            //MoveToEx(hdc, 10, 10, NULL);
+            //LineTo(hdc, 500, 600);
             // 绘制结束
             EndPaint(hWnd, &ps);
         }

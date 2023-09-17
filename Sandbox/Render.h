@@ -18,7 +18,7 @@ void OnInit(HWND hWnd)
     render->Init(width, height);
 
 
-    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\skull_low_poly.obj");
+    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
     objCube.m_ib = modelCube.ib;
     objCube.m_vb = modelCube.vb;
     objCube.m_name = modelCube.name;
@@ -31,9 +31,9 @@ void OnInit(HWND hWnd)
     }
 
     SR::Translation cubeTranslation;
-    cubeTranslation.m_position = { 0, 0, 3.0 };
+    cubeTranslation.m_position = { 0, 0, 5.0 };
     cubeTranslation.m_rotation = { 45, 25, 15 };
-    cubeTranslation.m_scaling = { 0.001, 0.001, 0.001 };
+    cubeTranslation.m_scaling = { 1, 1, 1 };
 
     objCube.m_translation = cubeTranslation;
 

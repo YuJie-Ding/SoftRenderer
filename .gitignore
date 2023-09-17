@@ -4,6 +4,7 @@ vendor/
 bin/
 bin-int/
 softRasterizer-main/
+Sandbox/assets
 *.zip
 
 # vs2022 project files

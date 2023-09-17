@@ -39,8 +39,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 在此处放置代码。
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
+    //AllocConsole();
+    //freopen("CONOUT$", "w", stdout);
     // 初始化全局字符串
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_SANDBOX, szWindowClass, MAX_LOADSTRING);

@@ -13,7 +13,7 @@ void OnInit(HWND hWnd, LONG width, LONG height)
     render->Init(width, height);
 
 
-    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
+    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\mt.obj");
     objCube.m_ib = modelCube.ib;
     objCube.m_vb = modelCube.vb;
     objCube.m_name = modelCube.name;
@@ -26,9 +26,9 @@ void OnInit(HWND hWnd, LONG width, LONG height)
     }
 
     SR::Translation cubeTranslation;
-    cubeTranslation.m_position = { 0, 0, 5.0 };
+    cubeTranslation.m_position = { 0, 0, 3 };
     cubeTranslation.m_rotation = { 45, 25, 15 };
-    cubeTranslation.m_scaling = { 1, 1, 1 };
+    cubeTranslation.m_scaling = { .01, .01, .01 };
 
     objCube.m_translation = cubeTranslation;
 
@@ -59,15 +59,18 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     objCube.m_translation.m_rotation.x += timeIntetval / 20.0f;
     objCube.m_translation.m_rotation.y += timeIntetval / 9.0f;
 
-    vShader.model_Mat = SR::Matrix4x4f::Translation(objCube.m_translation.m_position) * 
+    SR::Matrix4x4f model_Mat = SR::Matrix4x4f::Translation(objCube.m_translation.m_position) *
         SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.z, SR::Axis::Axis_Z) *
         SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.y, SR::Axis::Axis_Y) *
         SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.x, SR::Axis::Axis_X) *
         SR::Matrix4x4f::Scale(objCube.m_translation.m_scaling);
-    vShader.view_Mat = SR::Matrix4x4f::Indentity();
-    vShader.proj_Mat = SR::GetProjMatrix(1.0, 60);
+    SR::Matrix4x4f view_Mat = SR::Matrix4x4f::Indentity();
+    SR::Matrix4x4f proj_Mat = SR::GetProjMatrix(1.0, 60);
+    vShader.SetMVP(model_Mat, view_Mat, proj_Mat);
+
     auto frameBuffer = SR::Renderer::GetInstance()->OnRender(objCube, vShader);
     const void* colorData = frameBuffer->GetColorData();
+
     if (colorData != nullptr)
     {
         StretchDIBits(mdc,
@@ -85,8 +88,6 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     DeleteDC(mdc);
     DeleteObject(hbmp);
     DeleteObject(oldBitmap);
-
-    
 }
 
 void OnWindowSize(int width, int height)

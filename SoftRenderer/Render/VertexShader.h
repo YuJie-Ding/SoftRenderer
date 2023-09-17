@@ -18,11 +18,14 @@ namespace SR
 	public:
 		VertexShader() { }
 		virtual Vertex Execute(const Vertex& in) const;
+		void SetMVP(Matrix4x4f model_Mat, Matrix4x4f view_Mat, Matrix4x4f proj_Mat);
 
-	public:
-		Matrix4x4f model_Mat;
-		Matrix4x4f view_Mat;
-		Matrix4x4f proj_Mat;
+
+	private:
+		Matrix4x4f model_Mat = Matrix4x4f::Indentity();
+		Matrix4x4f view_Mat = Matrix4x4f::Indentity();
+		Matrix4x4f proj_Mat = Matrix4x4f::Indentity();
+		Matrix4x4f MVP;
 	};
 
 }

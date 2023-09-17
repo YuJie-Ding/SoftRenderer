@@ -1,5 +1,7 @@
 #include "FrameBuffer.h"
 #include <memory>
+#include <iostream>
+#include <windows.h>
 
 SR::FrameBuffer::FrameBuffer()
 {

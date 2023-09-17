@@ -6,13 +6,8 @@
 SR::RenderObject objCube;
 SR::VertexShader vShader;
 
-void OnInit(HWND hWnd)
+void OnInit(HWND hWnd, LONG width, LONG height)
 {
-    RECT rect;
-    GetClientRect(hWnd, &rect); 
-    LONG width = rect.right - rect.left;
-    LONG height = rect.bottom - rect.top;
-
 	// TODO: load model、texture，init renderer,
     SR::Renderer* render = SR::Renderer::Create();
     render->Init(width, height);
@@ -73,13 +68,17 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     vShader.proj_Mat = SR::GetProjMatrix(1.0, 60);
     auto frameBuffer = SR::Renderer::GetInstance()->OnRender(objCube, vShader);
     const void* colorData = frameBuffer->GetColorData();
-    StretchDIBits(mdc,
-        0, 0, width, height,
-        0, height, width, -height,
-        colorData,
-        &bitmapInfo,
-        DIB_RGB_COLORS,
-        SRCCOPY);
+    if (colorData != nullptr)
+    {
+        StretchDIBits(mdc,
+            0, 0, width, height,
+            0, height, width, -height,
+            colorData,
+            &bitmapInfo,
+            DIB_RGB_COLORS,
+            SRCCOPY);
+    }
+
 
     BitBlt(hdc, 0, 0, width, height, mdc, 0, 0, SRCCOPY);
     SelectObject(mdc, oldBitmap);

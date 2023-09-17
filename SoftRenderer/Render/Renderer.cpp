@@ -75,12 +75,16 @@ void SR::Renderer::Init(uint32_t width, uint32_t height)
 
 void SR::Renderer::ReSize(uint32_t width, uint32_t height)
 {
+	if (!m_isInit)
+		return;
 	m_frameBuffer.reset(new FrameBuffer(width, height));
 }
 
 const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj, const VertexShader& vShader)
 {
 	if (!m_isInit)
+		return nullptr;
+	if (m_frameBuffer->GetWidth() == 0 || m_frameBuffer->GetHeight() == 0)
 		return nullptr;
 
 	m_frameBuffer->ClearColor();
@@ -170,11 +174,6 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 
 	return m_frameBuffer;
 }
-
-//void SR::Renderer::setFrameBuffer(std::shared_ptr<FrameBuffer> frameBuffer)
-//{
-//	this->m_frameBuffer = frameBuffer;
-//}
 
 void SR::Renderer::DrawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
 {

@@ -36,7 +36,6 @@ namespace SR
 	private:
 		Renderer() { }
 
-		//void setFrameBuffer(std::shared_ptr<FrameBuffer> frameBuffer);
 		void DrawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2);
 
 	private:

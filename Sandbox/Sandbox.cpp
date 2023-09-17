@@ -123,15 +123,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
-   OnInit(hWnd);
-   isInit = true;
    GetClientRect(hWnd, &rect);
    width = rect.right - rect.left;
    height = rect.bottom - rect.top;
-   OnWindowSize(width, height);
-
-
-   //srand(time(0));
+   OnInit(hWnd, width, height);
+   isInit = true;
 
 
    return TRUE;
@@ -194,8 +190,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             OnWinPaint(hdc, timeNow, lastTime, width, height);
             // ------------------------------------ //
             lastTime = timeNow;
-            //MoveToEx(hdc, 10, 10, NULL);
-            //LineTo(hdc, 500, 600);
             // 绘制结束
             EndPaint(hWnd, &ps);
         }

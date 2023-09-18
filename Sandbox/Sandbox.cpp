@@ -26,7 +26,7 @@ LONG height;
 
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND& _hwnd);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -46,8 +46,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDC_SANDBOX, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
+    HWND hWnd;
     // 执行应用程序初始化:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance (hInstance, nCmdShow, hWnd))
     {
         return FALSE;
     }
@@ -60,11 +61,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 主消息循环:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
+        //{
+        //    if (!isInit)
+        //        break;
+        //    PAINTSTRUCT ps;
+
+        //    // 开始绘制
+        //    HDC hdc = BeginPaint(hWnd, &ps);
+        //    unsigned long long  timeNow = GetTickCount64();
+        //    // ------------------------------------ //
+        //    OnWinPaint(hdc, timeNow, lastTime, width, height);
+        //    // ------------------------------------ //
+        //    lastTime = timeNow;
+        //    // 绘制结束
+        //    EndPaint(hWnd, &ps);
+        //}
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-        }
+        }        
     }
 
     return (int) msg.wParam;
@@ -108,7 +124,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        在此函数中，我们在全局变量中保存实例句柄并
 //        创建和显示主程序窗口。
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND& _hwnd)
 {
    hInst = hInstance; // 将实例句柄存储在全局变量中
 
@@ -119,7 +135,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
-
+   _hwnd = hWnd;
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 

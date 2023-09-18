@@ -1,7 +1,7 @@
 #pragma once
 #include "SR.h"
 #include "windows.h"
-
+#include <sstream>
 
 SR::RenderObject objCube;
 SR::VertexShader vShader;
@@ -34,11 +34,14 @@ void OnInit(HWND hWnd, LONG width, LONG height)
 
 }
 
+// for displaying FPS
+int FPS = 0;
+int count_FPS = 0;
+unsigned long long timeBegin = 0;
+unsigned long long timeEnd = 0;
 
 void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime, int width, int height)
 {
-	std::cout << 1000.0 / (timeNow - lastTime) << std::endl;
-
     HDC mdc = CreateCompatibleDC(hdc);
     HBITMAP hbmp;
     hbmp = CreateCompatibleBitmap(hdc, width, height);
@@ -80,6 +83,22 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
             &bitmapInfo,
             DIB_RGB_COLORS,
             SRCCOPY);
+    }
+
+    // display FPS
+    {
+        if (count_FPS++ == 6)
+        {
+            timeEnd = GetTickCount64();
+            FPS = 1000.0 / ((timeEnd - timeBegin) / 7.0);
+            count_FPS = 0;
+            timeBegin = GetTickCount64();
+        }
+
+        std::stringstream s;
+        s << "FPS: " << FPS;
+        RECT rect1 = { 0, 0, 100, 100 };
+        DrawTextA(mdc, s.str().c_str(), s.str().size(), &rect1, DT_VCENTER);
     }
 
 

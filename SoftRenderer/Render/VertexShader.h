@@ -6,12 +6,28 @@
 namespace SR
 {
 
-	struct DLL_API Vertex
+	class DLL_API Vertex
 	{
+	private:
+		Vector4f m_position;
+
+	public:
+		Vertex(const Vector4f& position = {0, 0, 0, 0},
+				const Vector4f& normal = { 0, 0, 0, 0 },
+				const Vector4f& uv = { 0, 0, 0, 0 },
+				const Vector4f& color = { 0, 0, 0, 0 });
+		Vertex(const Vertex& vertex);
 		Vector4f position;
 		Vector4f normal;
 		Vector4f uv;
+		Vector4f color;
+		friend class VertexShader;
+		friend class Fragment;
+		friend class Renderer;
+		friend Vertex Lerp(const SR::Vertex& v1, const SR::Vertex& v2, double weight);
 	};
+
+	Vertex Lerp(const Vertex& v1, const Vertex& v2, double weight);
 
 	class DLL_API VertexShader
 	{

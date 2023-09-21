@@ -45,4 +45,5 @@ namespace SR
 	};
 
 	float Dot(const Vector4f& v1, const Vector4f& v2);
+	Vector4f Lerp(const Vector4f& v1, const Vector4f& v2, double weight);
 }

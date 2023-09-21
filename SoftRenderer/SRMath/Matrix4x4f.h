@@ -46,7 +46,7 @@ namespace SR
 	};
 
 	DLL_API Matrix4x4f Dot(const Matrix4x4f& mat1, const Matrix4x4f& mat2);
-	DLL_API Matrix4x4f GetProjMatrix(float aspect, float FOV);
+	DLL_API Matrix4x4f GetProjMatrix(float aspect, float FOV, float near, float far);
 
 }
 

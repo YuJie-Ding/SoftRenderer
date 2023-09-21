@@ -124,6 +124,8 @@ namespace SR
 	private:
 		uint32_t m_Count;
 		uint32_t* m_data;
+
+		friend class Renderer;
 	};
 
 }

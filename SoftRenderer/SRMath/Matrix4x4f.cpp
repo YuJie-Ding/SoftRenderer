@@ -186,14 +186,21 @@ Matrix4x4f SR::Dot(const Matrix4x4f& mat1, const Matrix4x4f& mat2)
 	return mat1 * mat2;
 }
 
-Matrix4x4f SR::GetProjMatrix(float aspect, float FOV)
+// 投影矩阵，做齐次除法后得到的NDC [0,1];
+Matrix4x4f SR::GetProjMatrix(float aspect, float FOV, float near, float far)
 {
-	Matrix4x4f projMat = Matrix4x4f::Indentity();
-	float cotFOV_2 = 1 / tan(FOV * PI / 360.0f);
-	projMat[0][0] = cotFOV_2 / aspect;
-	projMat[1][1] = cotFOV_2;
-	//projMat[3][3] = 0.0f;
-	//projMat[3][2] = 1.0f;
-	//projMat[2][3] = (2.0f * 0.3 * 1000.0f) / (1000.0f - 0.3);
+	float tanFOV_2 = tan(FOV * PI / 360.0f);
+	float b = -tanFOV_2 * near;
+	float l = b * aspect;
+	float t_b_inv = 1 / (-b * 2);
+	float r_l_inv = t_b_inv / aspect;
+	Matrix4x4f projMat;
+	projMat[0][0] = near * r_l_inv;
+	projMat[0][2] = -l * r_l_inv;
+	projMat[1][1] = near * t_b_inv;
+	projMat[1][2] = -b * t_b_inv;
+	projMat[2][2] = far / (far - near);
+	projMat[2][3] = near * far / (near - far);
+	projMat[3][2] = 1.0f;
 	return projMat;
 }

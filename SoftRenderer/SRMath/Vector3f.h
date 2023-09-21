@@ -5,6 +5,7 @@
 namespace SR
 {
 	class Vector2f;
+	class Vector4f;
 
 	class DLL_API Vector3f
 	{
@@ -12,6 +13,7 @@ namespace SR
 		Vector3f();
 		Vector3f(const float x_, const float y_, const float z_);
 		Vector3f(const Vector2f& vec2, const float z_ = 0.0f);
+		Vector3f(const Vector4f& vec4);
 		~Vector3f() { }
 
 		Vector3f operator+(const Vector3f& v) const;

@@ -147,3 +147,8 @@ float SR::Dot(const Vector4f& v1, const Vector4f& v2)
 {
 	return v1.Dot(v2);
 }
+
+SR::Vector4f SR::Lerp(const Vector4f& v1, const Vector4f& v2, double weight)
+{
+	return v1 * (1 - weight) + v2 * weight;
+}

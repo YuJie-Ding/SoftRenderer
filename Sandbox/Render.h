@@ -3,6 +3,7 @@
 #include "windows.h"
 #include <sstream>
 
+SR::RenderObject objmt;
 SR::RenderObject objCube;
 SR::VertexShader vShader;
 
@@ -10,28 +11,40 @@ void OnInit(HWND hWnd, LONG width, LONG height)
 {
 	// TODO: load model、texture，init renderer,
     SR::Renderer* render = SR::Renderer::Create();
+    std::shared_ptr<SR::Camera> mainCamera(new SR::Camera());
+    mainCamera->aspect = (float)width / height;
+    render->SetCamera(mainCamera);
     render->Init(width, height);
 
 
-    SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\mt.obj");
-    objCube.m_ib = modelCube.ib;
-    objCube.m_vb = modelCube.vb;
-    objCube.m_name = modelCube.name;
-
-    for (unsigned int i = 0; i < objCube.m_ib->GetCount(); i++)
     {
-        unsigned int index = objCube.m_ib->GetIndex(i);
-        const float* pObjPosition = (const float*)objCube.m_vb->GetVertexData(index, 0);
-        SR::Vector4f ObjPosition = { pObjPosition[0], pObjPosition[1], pObjPosition[2], 1.0f };
+        SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
+        objCube.m_ib = modelCube.ib;
+        objCube.m_vb = modelCube.vb;
+        objCube.m_name = modelCube.name;
+
+        SR::Translation cubeTranslation;
+        cubeTranslation.m_position = { 0, 2, 10 };
+        cubeTranslation.m_rotation = { 0, 0, 0 };
+        cubeTranslation.m_scaling = { 1, 1, 1 };
+
+        objCube.m_translation = cubeTranslation;
     }
 
-    SR::Translation cubeTranslation;
-    cubeTranslation.m_position = { 0, 0, 3 };
-    cubeTranslation.m_rotation = { 45, 25, 15 };
-    cubeTranslation.m_scaling = { .01, .01, .01 };
+    {
+        SR::Model_Obj modelMt = SR::LoadObjFromFile(".\\assets\\mt2.obj");
+        objmt.m_ib = modelMt.ib;
+        objmt.m_vb = modelMt.vb;
+        objmt.m_name = modelMt.name;
 
-    objCube.m_translation = cubeTranslation;
+        SR::Translation mtTranslation;
+        mtTranslation.m_position = { 0, 0, 3 };
+        mtTranslation.m_rotation = { 0, 0, 0 };
+        mtTranslation.m_scaling = { 1, 1, 1 };
 
+        objmt.m_translation = mtTranslation;
+    }
+    
 }
 
 // for displaying FPS
@@ -55,35 +68,55 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     bitmapInfo.bmiHeader.biPlanes = 1;
     bitmapInfo.bmiHeader.biBitCount = 32;
     bitmapInfo.bmiHeader.biCompression = BI_RGB;
-    bitmapInfo.bmiHeader.biSizeImage = width * height * 4;
 
 
-    float timeIntetval = timeNow - lastTime;
-    objCube.m_translation.m_rotation.x += timeIntetval / 20.0f;
-    objCube.m_translation.m_rotation.y += timeIntetval / 9.0f;
+    float timeInterval = timeNow - lastTime;
+    objCube.m_translation.m_rotation.x += timeInterval / 20.0f;
+    objCube.m_translation.m_rotation.y += timeInterval / 9.0f;
 
-    SR::Matrix4x4f model_Mat = SR::Matrix4x4f::Translation(objCube.m_translation.m_position) *
-        SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.z, SR::Axis::Axis_Z) *
-        SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.y, SR::Axis::Axis_Y) *
-        SR::Matrix4x4f::Rotation(objCube.m_translation.m_rotation.x, SR::Axis::Axis_X) *
-        SR::Matrix4x4f::Scale(objCube.m_translation.m_scaling);
-    SR::Matrix4x4f view_Mat = SR::Matrix4x4f::Indentity();
-    SR::Matrix4x4f proj_Mat = SR::GetProjMatrix(1.0, 60);
-    vShader.SetMVP(model_Mat, view_Mat, proj_Mat);
 
+    objmt.m_translation.m_rotation.x += timeInterval / 6.0f;
+    objmt.m_translation.m_rotation.y += timeInterval / 25.0f;
+    SR::Renderer::GetInstance()->GetCamera()->m_translation.m_rotation.z += timeInterval / 20.0f;
+    SR::Renderer::GetInstance()->GetCamera()->ClearColor();
+    SR::Renderer::GetInstance()->GetCamera()->ClearZBuffer();
+    
+    //SR::Renderer::GetInstance()->OnRender(objmt, vShader);
     auto frameBuffer = SR::Renderer::GetInstance()->OnRender(objCube, vShader);
-    const void* colorData = frameBuffer->GetColorData();
+    const void* backColorData = frameBuffer->GetColorData();
 
-    if (colorData != nullptr)
+    if (backColorData != nullptr)
     {
         StretchDIBits(mdc,
             0, 0, width, height,
             0, height, width, -height,
-            colorData,
+            backColorData,
             &bitmapInfo,
             DIB_RGB_COLORS,
             SRCCOPY);
     }
+
+    const void* centerColorData = frameBuffer->GetCenterColorData();
+    BITMAPINFO bitmapInfo2;
+    ZeroMemory(&bitmapInfo2, sizeof(BITMAPINFO));
+    bitmapInfo2.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmapInfo2.bmiHeader.biWidth = frameBuffer->GetCenterWidth();
+    bitmapInfo2.bmiHeader.biHeight = frameBuffer->GetCenterHeight();
+    bitmapInfo2.bmiHeader.biPlanes = 1;
+    bitmapInfo2.bmiHeader.biBitCount = 32;
+    bitmapInfo2.bmiHeader.biCompression = BI_RGB;
+
+    if (centerColorData != nullptr)
+    {
+        StretchDIBits(mdc,
+            0, 0, bitmapInfo2.bmiHeader.biWidth, height,
+            0, 0, bitmapInfo2.bmiHeader.biWidth, height,
+            centerColorData,
+            &bitmapInfo2,
+            DIB_RGB_COLORS,
+            SRCCOPY);
+    }
+
 
     // display FPS
     {
@@ -111,6 +144,7 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
 
 void OnWindowSize(int width, int height)
 {
+    SR::Renderer::GetInstance()->GetCamera()->aspect = (float)width / height;
     SR::Renderer::GetInstance()->ReSize(width, height);
 }
 

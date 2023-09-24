@@ -1,6 +1,7 @@
 #include "Vector2f.h"
 #include "Vector3f.h"
 #include "Vector4f.h"
+#include "Vector4c.h"
 #include <assert.h>
 #include <cmath>
 #include <sstream>
@@ -35,6 +36,14 @@ SR::Vector4f::Vector4f(const Vector3f& vec3, const float w_)
 	y = vec3.y;
 	z = vec3.z;
 	w = w_;
+}
+
+SR::Vector4f::Vector4f(const Vector4c& v)
+{
+	this->x = v.r;
+	this->y = v.g;
+	this->z = v.b;
+	this->w = v.a;
 }
 
 SR::Vector4f SR::Vector4f::operator+(const Vector4f& v) const

@@ -7,6 +7,7 @@ namespace SR
 {
 	class Vector3f;
 	class Vector2f;
+	class Vector4c;
 	class Matrix4x4f;
 
 	class DLL_API Vector4f
@@ -16,6 +17,7 @@ namespace SR
 		Vector4f(const float x_, const float y_, const float z_, const float w_);
 		Vector4f(const Vector2f& vec3, const float z_ = 0.0f, const float w_ = 0.0f);
 		Vector4f(const Vector3f& vec3, const float w_ = 0.0f);
+		Vector4f(const Vector4c& v);
 		~Vector4f() { }
 
 		Vector4f operator+(const Vector4f& v) const;

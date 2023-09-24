@@ -5,6 +5,7 @@
 #include "Render/VertexShader.h"
 #include "Render/FrameBuffer.h"
 #include "Render/FragmentShader.h"
+#include "Render/Texture.h"
 #include "Camera.h"
 #include <memory>
 
@@ -20,7 +21,7 @@ namespace SR
 		void Init(uint32_t width, uint32_t height);
 		void ReSize(uint32_t width, uint32_t height);
 
-		const std::shared_ptr<FrameBuffer> OnRender(RenderObject& obj, VertexShader& vShader);
+		const std::shared_ptr<FrameBuffer> OnRender(RenderObject& obj, VertexShader& vShader, FragmentShader& fShader);
 		void SetCamera(std::shared_ptr<SR::Camera> camera)
 		{
 			m_Camera = camera;

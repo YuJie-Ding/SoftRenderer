@@ -3,9 +3,46 @@
 #include "windows.h"
 #include <sstream>
 
+int loadBmp(std::string bmpPath, BITMAPINFO*& pbmi, BYTE*& pBits)
+{
+    BITMAPFILEHEADER bmfh;
+    FILE* fpi;
+    BOOL bSuccess;
+    DWORD dwInfoSize, dwBytesRead;
+    using namespace std;
+    fpi = fopen(bmpPath.c_str(), "rb");
+    if (fpi == NULL)
+    {
+        cout << "Failed to open file";
+        exit(EXIT_FAILURE);
+    }
+    // 读取文件头
+    fread(&bmfh, sizeof(tagBITMAPFILEHEADER), 1, fpi);
+    if (bmfh.bfType != 0x4d42)
+    {
+        cout << "Not bmp file";
+        exit(EXIT_FAILURE);
+    }
+    // showBmpHead(strHead);
+    pbmi = new BITMAPINFO;
+    //读取信息头
+    fread(pbmi, 40, 1, fpi);
+    // 跳过调色板直接读取像素信息
+    int offset = bmfh.bfOffBits - 54;
+    fseek(fpi, offset, SEEK_CUR);
+    pBits = new BYTE[pbmi->bmiHeader.biWidth * pbmi->bmiHeader.biHeight * 3];
+    int n = fread(pBits, bmfh.bfSize - bmfh.bfOffBits, 1, fpi);
+    fclose(fpi);
+    return 1;
+}
+
 SR::RenderObject objmt;
 SR::RenderObject objCube;
+SR::RenderObject objPlane;
 SR::VertexShader vShader;
+SR::FragmentShader fShader;
+
+SR::Texture texture1;
 
 void OnInit(HWND hWnd, LONG width, LONG height)
 {
@@ -15,8 +52,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
     mainCamera->aspect = (float)width / height;
     render->SetCamera(mainCamera);
     render->Init(width, height);
+    BITMAPINFO* bmpinfo;
+    BYTE* data;
 
-
+    loadBmp(".\\assets\\chess.bmp", bmpinfo, data);
+    texture1.BufferData(data, bmpinfo->bmiHeader.biWidth, bmpinfo->bmiHeader.biHeight, bmpinfo->bmiHeader.biBitCount / 8);
+    fShader.SetTexture(&texture1);
     {
         SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
         objCube.m_ib = modelCube.ib;
@@ -24,7 +65,7 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objCube.m_name = modelCube.name;
 
         SR::Translation cubeTranslation;
-        cubeTranslation.m_position = { 0, 2, 10 };
+        cubeTranslation.m_position = { 0, 2, 7 };
         cubeTranslation.m_rotation = { 0, 0, 0 };
         cubeTranslation.m_scaling = { 1, 1, 1 };
 
@@ -43,6 +84,20 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         mtTranslation.m_scaling = { 1, 1, 1 };
 
         objmt.m_translation = mtTranslation;
+    }
+
+    {
+        SR::Model_Obj modelMt = SR::LoadObjFromFile(".\\assets\\plane.obj");
+        objPlane.m_ib = modelMt.ib;
+        objPlane.m_vb = modelMt.vb;
+        objPlane.m_name = modelMt.name;
+
+        SR::Translation mtTranslation;
+        mtTranslation.m_position = { 0, -1, 5 };
+        mtTranslation.m_rotation = { 0, 0, 0 };
+        mtTranslation.m_scaling = { 1, 1, 1 };
+
+        objPlane.m_translation = mtTranslation;
     }
     
 }
@@ -77,12 +132,20 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
 
     objmt.m_translation.m_rotation.x += timeInterval / 6.0f;
     objmt.m_translation.m_rotation.y += timeInterval / 25.0f;
+
+
+    objPlane.m_translation.m_rotation.x += timeInterval / 6.0f;
+    objPlane.m_translation.m_rotation.y += timeInterval / 25.0f;
+
     SR::Renderer::GetInstance()->GetCamera()->m_translation.m_rotation.z += timeInterval / 20.0f;
     SR::Renderer::GetInstance()->GetCamera()->ClearColor();
     SR::Renderer::GetInstance()->GetCamera()->ClearZBuffer();
-    
-    //SR::Renderer::GetInstance()->OnRender(objmt, vShader);
-    auto frameBuffer = SR::Renderer::GetInstance()->OnRender(objCube, vShader);
+
+    SR::Renderer::GetInstance()->OnRender(objmt, vShader, fShader);
+    //SR::Renderer::GetInstance()->OnRender(objCube, vShader, fShader);
+    //SR::Renderer::GetInstance()->OnRender(objPlane, vShader, fShader);
+
+    auto frameBuffer = SR::Renderer::GetInstance()->GetCamera()->GetFrameBuffer();
     const void* backColorData = frameBuffer->GetColorData();
 
     if (backColorData != nullptr)

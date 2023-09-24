@@ -27,6 +27,8 @@ namespace SR
 			m_frameBuffer->ClearZBuffer();
 		}
 
+		std::shared_ptr<FrameBuffer> GetFrameBuffer();
+
 	public:
 		Translation m_translation;
 		float aspect;
@@ -37,7 +39,6 @@ namespace SR
 
 	private:
 		void SetFrameBuffer(uint32_t width, uint32_t height);
-		std::shared_ptr<FrameBuffer> GetFrameBuffer();
 		std::shared_ptr<FrameBuffer> m_frameBuffer;
 
 		friend class Renderer;

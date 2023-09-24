@@ -4,12 +4,13 @@
 
 namespace SR
 {
-
+	class Vector4f;
 	class DLL_API Vector2f
 	{
 	public:
 		Vector2f();
 		Vector2f(const float x_, const float y_);
+		Vector2f(const Vector4f& v);
 		~Vector2f() { }
 
 		Vector2f operator+(const Vector2f& v) const;

@@ -1,4 +1,5 @@
 #include "Vector2f.h"
+#include "Vector4f.h"
 #include <assert.h>
 #include <sstream>
 #include <cmath>
@@ -13,6 +14,12 @@ SR::Vector2f::Vector2f(const float x_, const float y_)
 {
     x = x_;
     y = y_;
+}
+
+SR::Vector2f::Vector2f(const Vector4f& v)
+{
+    x = v.x;
+    y = v.y;
 }
 
 SR::Vector2f SR::Vector2f::operator+(const Vector2f& v) const

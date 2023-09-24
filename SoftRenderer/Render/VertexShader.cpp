@@ -11,7 +11,6 @@ void SR::VertexShader::SetMVP(Matrix4x4f model_Mat, Matrix4x4f view_Mat, Matrix4
 SR::Vertex SR::VertexShader::Execute(const Vertex& in) const
 {
 	Vertex out;
-	//out.position = model_Mat * view_Mat * in.position;
 	out.position = in.position;
 	out.normal = in.normal;
 	out.color = in.color;
@@ -24,7 +23,7 @@ SR::Vertex SR::VertexShader::Execute(const Vertex& in) const
 SR::Vertex SR::Lerp(const SR::Vertex& v1, const SR::Vertex& v2, double weight)
 {
 	SR::Vertex out;
-	float t = (weight * v1.m_position.w) / ((weight * v1.m_position.w + (1 - weight) * v2.m_position.w));
+	double t = (weight * v1.m_position.w) / ((weight * v1.m_position.w + (1 - weight) * v2.m_position.w));
 	if (t > 0 == false)
 	{
 		int a = 0;

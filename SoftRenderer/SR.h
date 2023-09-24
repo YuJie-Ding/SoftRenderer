@@ -9,4 +9,5 @@
 #include "Render/Translation.h"
 #include "Render/VertexShader.h"
 #include "Render/FragmentShader.h"
+#include "Render/Texture.h"
 #include "Render/Renderer.h"

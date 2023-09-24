@@ -36,7 +36,7 @@ void SR::Renderer::ReSize(uint32_t width, uint32_t height)
 #include <Windows.h>
 #undef min
 
-const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj, VertexShader& vShader)
+const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj, VertexShader& vShader, FragmentShader& fShader)
 {
 	if (!m_isInit)
 		return nullptr;
@@ -87,6 +87,14 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 		{
 			// 裁剪
 
+			// 背面剔除
+			//Vector2f v1 = result[i - 1].m_position - result[i - 2].m_position;
+			//Vector2f v2 = result[i].m_position - result[i - 2].m_position;
+			//if ((v1.x * v2.y - v1.y * v2.x) > 0)
+			//{
+			//	continue;
+			//}
+
 			// 光栅化和插值
 			uint32_t* fragsIndex;
 			uint32_t row;
@@ -104,31 +112,13 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 						{
 							continue;
 						}
-						//m_Camera->m_frameBuffer->SetPixelColor(
-						//	frags[i][j].m_position.x, 
-						//	frags[i][j].m_position.y, 
-						//	(uint32_t)((frags[i][j].position.x + 1) / 2 * 255),
-						//	(uint32_t)((frags[i][j].position.y + 1) / 2 * 255),
-						//	(uint32_t)((frags[i][j].position.z + 1) / 2 * 255),
-						//	255
-						//);
-						//Vector3f normal = frags[i][j].normal;
-						//Vector3f normal_Normalize = normal.Normalize();
-						//m_Camera->m_frameBuffer->SetPixelColor(
-						//	frags[i][j].m_position.x,
-						//	frags[i][j].m_position.y,
-						//	(uint32_t)(normal_Normalize.x * 255),
-						//	(uint32_t)(normal_Normalize.y * 255),
-						//	(uint32_t)(normal_Normalize.z * 255),
-						//	255
-						//);
-						frags[i][j].uv = frags[i][j].uv.Normalize();
+						Fragment frag = fShader.Execute(frags[i][j]);
 						m_Camera->m_frameBuffer->SetPixelColor(
 							frags[i][j].m_position.x,
 							frags[i][j].m_position.y,
-							(uint32_t)(frags[i][j].uv.x * 255),
-							(uint32_t)(frags[i][j].uv.y * 255),
-							0,
+							frag.color.r,
+							frag.color.g,
+							frag.color.b,
 							255
 						);
 						m_Camera->m_frameBuffer->SetZBuffer(frags[i][j].m_position.x, frags[i][j].m_position.y, frags[i][j].m_position.z);
@@ -205,13 +195,20 @@ namespace SR
 				uint32_t lengthOfRow = (uint32_t)abs((long long)v2_l.m_position.x - (long long)v1_l.m_position.x) + 1;
 				fragsIndex[count1] = lengthOfRow;
 				frags[count1] = new Fragment[lengthOfRow];
-				frags[count1][0] = v1_l;
-				frags[count1][lengthOfRow - 1] = v1_l;
+				if (lengthOfRow == 1)
+				{
+					frags[count1][0] = v1_l;
+				}
+				else
+				{
+					frags[count1][0] = v1_l;
+					frags[count1][lengthOfRow - 1] = v2_l;
+				}
 
 				for (uint32_t x = v1_l.m_position.x + 1; x < (uint32_t)v2_l.m_position.x; x++)
 				{
 					frags[count1][count2] =
-						Lerp(v1_l, v2_l, (x - (uint32_t)v1_l.m_position.x) / (v2_l.m_position.x - v1_l.m_position.x));
+						Lerp(v1_l, v2_l, (x - (uint32_t)v1_l.m_position.x) / (float)((uint32_t)v2_l.m_position.x - (uint32_t)v1_l.m_position.x));
 					frags[count1][count2].m_position.x = (uint32_t)x;
 					frags[count1][count2].m_position.y = (uint32_t)y;
 					count2++;
@@ -240,13 +237,20 @@ namespace SR
 				uint32_t lengthOfRow = (uint32_t)abs((long long)v2_l.m_position.x - (long long)v1_l.m_position.x) + 1;
 				fragsIndex[count1] = lengthOfRow;
 				frags[count1] = new Fragment[lengthOfRow];
-				frags[count1][0] = v1_l;
-				frags[count1][lengthOfRow - 1] = v1_l;
+				if (lengthOfRow == 1)
+				{
+					frags[count1][0] = v1_l;
+				}
+				else
+				{
+					frags[count1][0] = v1_l;
+					frags[count1][lengthOfRow - 1] = v2_l;
+				}
 
 				for (uint32_t x = v1_l.m_position.x + 1; x < (uint32_t)v2_l.m_position.x; x++)
 				{
 					frags[count1][count2] =
-						Lerp(v1_l, v2_l, (x - (uint32_t)v1_l.m_position.x) / (v2_l.m_position.x - v1_l.m_position.x));
+						Lerp(v1_l, v2_l, (x - (uint32_t)v1_l.m_position.x) / (float)((uint32_t)v2_l.m_position.x - (uint32_t)v1_l.m_position.x));
 					frags[count1][count2].m_position.x = (uint32_t)x;
 					frags[count1][count2].m_position.y = (uint32_t)y;
 					count2++;

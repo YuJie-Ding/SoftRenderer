@@ -2,6 +2,7 @@
 #include "Vector3f.h"
 #include "Vector4f.h"
 #include "Vector4c.h"
+#include "Matrix4x4f.h"
 #include <assert.h>
 #include <cmath>
 #include <sstream>
@@ -46,6 +47,11 @@ SR::Vector4f::Vector4f(const Vector4c& v)
 	this->w = v.a;
 }
 
+SR::Vector4f SR::Vector4f::operator+(float n) const
+{
+	return Vector4f(x + n, y + n, z + n, w + n);
+}
+
 SR::Vector4f SR::Vector4f::operator+(const Vector4f& v) const
 {
 	return Vector4f(x + v.x, y + v.y, z + v.z, w + v.w);
@@ -61,10 +67,11 @@ SR::Vector4f SR::Vector4f::operator*(const float k) const
 	return Vector4f(x * k, y * k, z * k, w * k);
 }
 
+// 注意：和线性代数中定义的乘法不同
 SR::Vector4f SR::Vector4f::operator*(const Matrix4x4f& mat) const
 {
 	assert(false);
-	return Vector4f();
+	return mat.Transpose() * (*this);
 }
 
 SR::Vector4f SR::Vector4f::operator/(const float k) const

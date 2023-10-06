@@ -20,6 +20,8 @@ namespace SR
 		Vector4f(const Vector4c& v);
 		~Vector4f() { }
 
+
+		Vector4f operator+(float n) const;
 		Vector4f operator+(const Vector4f& v) const;
 		Vector4f operator-(const Vector4f& v) const;
 		Vector4f operator*(const float k) const;

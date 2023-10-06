@@ -1,4 +1,5 @@
 ﻿#include "Matrix4x4f.h"
+#include "Matrix3x3f.h"
 
 #include <assert.h>
 #include <cmath>
@@ -23,6 +24,15 @@ SR::Matrix4x4f::Matrix4x4f(const Vector4f mat_[4])
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			mat[i][j] = mat_[i][j];
+}
+
+SR::Matrix4x4f::Matrix4x4f(const Matrix3x3f& mat_)
+{
+	memset(mat, 0, sizeof(mat));
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			mat[i][j] = mat_[i][j];
+	mat[3][3] = 1;
 }
 
 Matrix4x4f SR::Matrix4x4f::operator+(const Matrix4x4f& m1) const
@@ -72,7 +82,7 @@ Vector4f SR::Matrix4x4f::operator*(const Vector4f& v) const
 
 Matrix4x4f SR::Matrix4x4f::operator*(const float n) const
 {
-	Matrix4x4f m;
+	Matrix4x4f m = *this;
 	for (int i = 0; i < 4; i++)
 	{
 		m[i] *= n;
@@ -102,6 +112,7 @@ Matrix4x4f SR::Matrix4x4f::Transpose() const
 	}
 	return m;
 }
+
 
 Matrix4x4f SR::Matrix4x4f::Indentity()
 {

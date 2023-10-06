@@ -43,6 +43,11 @@ SR::Vector3f SR::Vector3f::operator-(const Vector3f& v) const
     return Vector3f(x - v.x, x - v.y, z - v.z);
 }
 
+float SR::Vector3f::operator*(const Vector3f& v) const
+{
+    return this->Dot(v);
+}
+
 SR::Vector3f SR::Vector3f::operator*(const float k) const
 {
     return Vector3f(x * k, y * k, z * k);

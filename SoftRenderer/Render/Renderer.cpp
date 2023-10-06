@@ -166,11 +166,11 @@ namespace SR
 		float k1_2_inv = (float)((int)v1->m_position.x - (int)v2->m_position.x) / ((int)v1->m_position.y - (int)v2->m_position.y);
 		float k2_3_inv = (float)((int)v2->m_position.x - (int)v3->m_position.x) / ((int)v2->m_position.y - (int)v3->m_position.y);
 		float k1_3_inv = (float)((int)v1->m_position.x - (int)v3->m_position.x) / ((int)v1->m_position.y - (int)v3->m_position.y);
-		float x1 = (uint32_t)v1->m_position.x;
-		float x2 = (uint32_t)v1->m_position.x;
-		float x3 = (uint32_t)v2->m_position.x;
-		uint32_t count1 = 0;
-		for (uint32_t y = v1->m_position.y; y >= (uint32_t)v3->m_position.y; y--)
+		float x1 = (int)v1->m_position.x;
+		float x2 = (int)v1->m_position.x;
+		float x3 = (int)v2->m_position.x;
+		int count1 = 0;
+		for (int y = v1->m_position.y; y >= (int)v3->m_position.y; y--)
 		{
 			uint32_t count2 = 1;
 			if (y >= v2->m_position.y)
@@ -180,18 +180,17 @@ namespace SR
 				float weight2 = sqrt(pow(x2 - v1->m_position.x, 2) + pow(y - v1->m_position.y, 2)) /
 					sqrt(pow(v1->m_position.x - v2->m_position.x, 2) + pow(v1->m_position.y - v2->m_position.y, 2));
 				Vertex v1_l = Lerp(*v1, *v3, weight1);
-				v1_l.m_position.x = (uint32_t)x1;
+				v1_l.m_position.x = (int)x1;
 				v1_l.m_position.y = y;
 				Vertex v2_l = Lerp(*v1, *v2, weight2);
-				v2_l.m_position.x = (uint32_t)x2;
+				v2_l.m_position.x = (int)x2;
 				v2_l.m_position.y = y;
-				if ((uint32_t)v1_l.m_position.x > (uint32_t)v2_l.m_position.x)
+				if ((int)v1_l.m_position.x > (int)v2_l.m_position.x)
 				{
 					auto temp = v1_l;
 					v1_l = v2_l;
 					v2_l = temp;
 				}
-
 				uint32_t lengthOfRow = (uint32_t)abs((long long)v2_l.m_position.x - (long long)v1_l.m_position.x) + 1;
 				fragsIndex[count1] = lengthOfRow;
 				frags[count1] = new Fragment[lengthOfRow];
@@ -205,12 +204,12 @@ namespace SR
 					frags[count1][lengthOfRow - 1] = v2_l;
 				}
 
-				for (uint32_t x = v1_l.m_position.x + 1; x < (uint32_t)v2_l.m_position.x; x++)
+				for (int x = v1_l.m_position.x + 1; x < (int)v2_l.m_position.x; x++)
 				{
 					frags[count1][count2] =
-						Lerp(v1_l, v2_l, (x - (uint32_t)v1_l.m_position.x) / (float)((uint32_t)v2_l.m_position.x - (uint32_t)v1_l.m_position.x));
-					frags[count1][count2].m_position.x = (uint32_t)x;
-					frags[count1][count2].m_position.y = (uint32_t)y;
+						Lerp(v1_l, v2_l, (x - (int)v1_l.m_position.x) / (float)((int)v2_l.m_position.x - (int)v1_l.m_position.x));
+					frags[count1][count2].m_position.x = (int)x;
+					frags[count1][count2].m_position.y = (int)y;
 					count2++;
 				}
 				x1 -= k1_3_inv;
@@ -223,12 +222,12 @@ namespace SR
 				float weight2 = sqrt(pow(x3 - v2->m_position.x, 2) + pow(y - v2->m_position.y, 2)) /
 					sqrt(pow(v3->m_position.x - v2->m_position.x, 2) + pow(v3->m_position.y - v2->m_position.y, 2));
 				Vertex v1_l = Lerp(*v1, *v3, weight1);
-				v1_l.m_position.x = (uint32_t)x1;
+				v1_l.m_position.x = (int)x1;
 				v1_l.m_position.y = y;
 				Vertex v2_l = Lerp(*v2, *v3, weight2);
-				v2_l.m_position.x = (uint32_t)x3;
+				v2_l.m_position.x = (int)x3;
 				v2_l.m_position.y = y;
-				if ((uint32_t)v1_l.m_position.x > (uint32_t)v2_l.m_position.x)
+				if ((int)v1_l.m_position.x > (int)v2_l.m_position.x)
 				{
 					auto temp = v1_l;
 					v1_l = v2_l;
@@ -247,12 +246,12 @@ namespace SR
 					frags[count1][lengthOfRow - 1] = v2_l;
 				}
 
-				for (uint32_t x = v1_l.m_position.x + 1; x < (uint32_t)v2_l.m_position.x; x++)
+				for (int x = v1_l.m_position.x + 1; x < (int)v2_l.m_position.x; x++)
 				{
 					frags[count1][count2] =
-						Lerp(v1_l, v2_l, (x - (uint32_t)v1_l.m_position.x) / (float)((uint32_t)v2_l.m_position.x - (uint32_t)v1_l.m_position.x));
-					frags[count1][count2].m_position.x = (uint32_t)x;
-					frags[count1][count2].m_position.y = (uint32_t)y;
+						Lerp(v1_l, v2_l, (x - (int)v1_l.m_position.x) / (float)((int)v2_l.m_position.x - (int)v1_l.m_position.x));
+					frags[count1][count2].m_position.x = (int)x;
+					frags[count1][count2].m_position.y = (int)y;
 					count2++;
 				}
 				x1 -= k1_3_inv;
@@ -261,6 +260,11 @@ namespace SR
 			count1++;
 		}
 		return frags;
+	}
+
+	Vector4f GetWorldCameraPos()
+	{
+		return Renderer::GetInstance()->GetCamera()->m_translation.m_position;
 	}
 
 }

@@ -39,7 +39,7 @@ namespace SR
 	{
 	public:
 		FragmentShader()
-		: m_texture1(nullptr)
+		: m_texture1(nullptr), m_texture2(nullptr), m_texture3(nullptr), m_texture4(nullptr), m_CubeTexture(nullptr)
 		{ }
 
 		virtual Fragment Execute(const Fragment& in) const;		
@@ -54,7 +54,7 @@ namespace SR
 			return m_texture1;
 		}
 
-	private:
+	protected:
 		Texture* m_texture1;
 		Texture* m_texture2;
 		Texture* m_texture3;

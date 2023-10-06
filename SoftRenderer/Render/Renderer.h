@@ -32,7 +32,6 @@ namespace SR
 			return m_Camera;
 		}
 
-
 		static Renderer* Create()
 		{
 			if (SR::s_Instance != nullptr)
@@ -51,7 +50,6 @@ namespace SR
 			:m_Camera(nullptr)
 		{ }
 
-		//void DrawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2);
 		Fragment** Rasterize(SR::Vertex* v1, SR::Vertex* v2, SR::Vertex* v3,
 			uint32_t*& fragsIndex_, uint32_t& row_);
 
@@ -59,6 +57,8 @@ namespace SR
 		std::shared_ptr<Camera> m_Camera;
 		bool m_isInit = false;
 	};
+
+	Vector4f GetWorldCameraPos();
 
 }
 

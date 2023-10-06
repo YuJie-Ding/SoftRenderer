@@ -39,14 +39,23 @@ int loadBmp(std::string bmpPath, BITMAPINFO*& pbmi, BYTE*& pBits)
 SR::RenderObject objmt;
 SR::RenderObject objCube;
 SR::RenderObject objPlane;
-SR::VertexShader vShader;
-SR::FragmentShader fShader;
+SR::RenderObject objCylinder;
+SR::VertexShader* LightVertexShader;
+SR::FragmentShader* LightFragmentShader;
+
+SR::VertexShader* UnlitVertexShader;
+SR::FragmentShader* UnlitFragmentShader;
 
 SR::Texture texture1;
 
 void OnInit(HWND hWnd, LONG width, LONG height)
 {
-	// TODO: load model、texture，init renderer,
+    LightVertexShader = new SR::Light_VShader;
+    LightFragmentShader = new SR::Light_FShader;
+
+    UnlitVertexShader = new SR::VertexShader;
+    UnlitFragmentShader = new SR::FragmentShader;
+
     SR::Renderer* render = SR::Renderer::Create();
     std::shared_ptr<SR::Camera> mainCamera(new SR::Camera());
     mainCamera->aspect = (float)width / height;
@@ -57,7 +66,8 @@ void OnInit(HWND hWnd, LONG width, LONG height)
 
     loadBmp(".\\assets\\chess.bmp", bmpinfo, data);
     texture1.BufferData(data, bmpinfo->bmiHeader.biWidth, bmpinfo->bmiHeader.biHeight, bmpinfo->bmiHeader.biBitCount / 8);
-    fShader.SetTexture(&texture1);
+    LightFragmentShader->SetTexture(&texture1);
+
     {
         SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
         objCube.m_ib = modelCube.ib;
@@ -65,7 +75,7 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objCube.m_name = modelCube.name;
 
         SR::Translation cubeTranslation;
-        cubeTranslation.m_position = { 0, 2, 7 };
+        cubeTranslation.m_position = { 0, 0, 7 };
         cubeTranslation.m_rotation = { 0, 0, 0 };
         cubeTranslation.m_scaling = { 1, 1, 1 };
 
@@ -87,19 +97,33 @@ void OnInit(HWND hWnd, LONG width, LONG height)
     }
 
     {
-        SR::Model_Obj modelMt = SR::LoadObjFromFile(".\\assets\\plane.obj");
-        objPlane.m_ib = modelMt.ib;
-        objPlane.m_vb = modelMt.vb;
-        objPlane.m_name = modelMt.name;
+        SR::Model_Obj modelPlane = SR::LoadObjFromFile(".\\assets\\plane.obj");
+        objPlane.m_ib = modelPlane.ib;
+        objPlane.m_vb = modelPlane.vb;
+        objPlane.m_name = modelPlane.name;
 
         SR::Translation mtTranslation;
-        mtTranslation.m_position = { 0, -1, 5 };
+        mtTranslation.m_position = { 0, -2, 10 };
         mtTranslation.m_rotation = { 0, 0, 0 };
-        mtTranslation.m_scaling = { 1, 1, 1 };
+        mtTranslation.m_scaling = { 3, 1, 5 };
 
         objPlane.m_translation = mtTranslation;
     }
-    
+
+    {
+
+        SR::Model_Obj modelCylinder = SR::LoadObjFromFile(".\\assets\\cylinder.obj");
+        objCylinder.m_ib = modelCylinder.ib;
+        objCylinder.m_vb = modelCylinder.vb;
+        objCylinder.m_name = modelCylinder.name;
+
+        SR::Translation mtTranslation;
+        mtTranslation.m_position = { 0, 0, 7 };
+        mtTranslation.m_rotation = { 0, 0, 0 };
+        mtTranslation.m_scaling = { 1, 1, 1 };
+
+        objCylinder.m_translation = mtTranslation;
+    }
 }
 
 // for displaying FPS
@@ -137,13 +161,18 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     objPlane.m_translation.m_rotation.x += timeInterval / 6.0f;
     objPlane.m_translation.m_rotation.y += timeInterval / 25.0f;
 
-    SR::Renderer::GetInstance()->GetCamera()->m_translation.m_rotation.z += timeInterval / 20.0f;
+
+    objCylinder.m_translation.m_rotation.x += timeInterval / 6.0f;
+    objCylinder.m_translation.m_rotation.y += timeInterval / 25.0f;
+
+    //SR::Renderer::GetInstance()->GetCamera()->m_translation.m_rotation.z += timeInterval / 20.0f;
     SR::Renderer::GetInstance()->GetCamera()->ClearColor();
     SR::Renderer::GetInstance()->GetCamera()->ClearZBuffer();
 
-    SR::Renderer::GetInstance()->OnRender(objmt, vShader, fShader);
-    //SR::Renderer::GetInstance()->OnRender(objCube, vShader, fShader);
-    //SR::Renderer::GetInstance()->OnRender(objPlane, vShader, fShader);
+    SR::Renderer::GetInstance()->OnRender(objmt, *LightVertexShader, *LightFragmentShader);
+    //SR::Renderer::GetInstance()->OnRender(objCube, *LightVertexShader, *LightFragmentShader);
+    //SR::Renderer::GetInstance()->OnRender(objCylinder, *LightVertexShader, *LightFragmentShader);
+    //SR::Renderer::GetInstance()->OnRender(objPlane, *LightVertexShader, *LightFragmentShader);
 
     auto frameBuffer = SR::Renderer::GetInstance()->GetCamera()->GetFrameBuffer();
     const void* backColorData = frameBuffer->GetColorData();

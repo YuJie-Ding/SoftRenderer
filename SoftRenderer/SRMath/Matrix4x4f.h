@@ -10,12 +10,15 @@
 
 namespace SR
 {
+	class Matrix3x3f;
+
 	class DLL_API Matrix4x4f
 	{
 	public:
 		Matrix4x4f();
 		Matrix4x4f(const float mat_[4][4]);
 		Matrix4x4f(const Vector4f mat_[4]);
+		Matrix4x4f(const Matrix3x3f& mat_);
 
 		Matrix4x4f operator+(const Matrix4x4f& m1) const;
 		Matrix4x4f operator-(const Matrix4x4f& m1) const;

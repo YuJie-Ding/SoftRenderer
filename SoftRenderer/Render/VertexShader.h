@@ -21,6 +21,7 @@ namespace SR
 		Vector4f normal;
 		Vector4f uv;
 		Vector4f color;
+		void Object2Clip_POS(const Vertex& in, const Matrix4x4f& MVP); // 将顶点坐标变换到裁剪空间
 		friend class VertexShader;
 		friend class Fragment;
 		friend class Renderer;
@@ -36,9 +37,9 @@ namespace SR
 		virtual Vertex Execute(const Vertex& in) const;
 		void SetMVP(Matrix4x4f model_Mat, Matrix4x4f view_Mat, Matrix4x4f proj_Mat);
 
-
-	private:
+	protected:
 		Matrix4x4f model_Mat = Matrix4x4f::Indentity();
+		Matrix4x4f model_Mat_Inv = Matrix4x4f::Indentity();
 		Matrix4x4f view_Mat = Matrix4x4f::Indentity();
 		Matrix4x4f proj_Mat = Matrix4x4f::Indentity();
 		Matrix4x4f MVP;

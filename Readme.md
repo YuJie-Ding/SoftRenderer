@@ -2,7 +2,7 @@
 
 ## 介绍
 
-此项目是我的毕业设计，使用C++从零设计了一个软光栅渲染器，使用面向对象方式设计，没有任何依赖库。  
+此项目是我的毕业设计，使用C++从零设计了一个软光栅渲染器，使用面向对象方式设计，没有任何依赖库，总代码量大约2700行。  
 
 我将这个项目开源，大家可以参考学习，用到的图形学算法都是光栅化渲染中最基础的算法，网上可以搜到很多相关文章，在此列出一些相关资料供大家参考：
 
@@ -61,3 +61,10 @@
 [13] 冯乐乐. Unity Shader入门精要[M]. 北京: 人民邮电出版社，2016. 121-136.  
 [14] 崔馨平. 用OpenGL实现现代实时光栅化渲染引擎[D]. 北京：北京邮电大学，2021. 50-55.  
 [15] Christiane Ulbricht, Alexander Wilkie, Werner Purgathofer. Verification of Physically Based Rendering Algorithms[J]. Computer Graphics Forum, 2006, 25: 237-255.
+
+## 问题反馈
+
+有任何问题可以联系我  
+QQ：779553699  
+WeChat：d779553699  
+E-Mail：yujie-ding@qq.com

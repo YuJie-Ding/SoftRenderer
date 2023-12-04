@@ -2,6 +2,7 @@
 #include "SR.h"
 #include "windows.h"
 #include <sstream>
+#include <fstream>
 
 int loadBmp(std::string bmpPath, BITMAPINFO*& pbmi, BYTE*& pBits)
 {
@@ -36,10 +37,14 @@ int loadBmp(std::string bmpPath, BITMAPINFO*& pbmi, BYTE*& pBits)
     return 1;
 }
 
-SR::RenderObject objmt;
 SR::RenderObject objCube;
 SR::RenderObject objPlane;
 SR::RenderObject objCylinder;
+SR::RenderObject objCat;
+SR::RenderObject objTorus;
+SR::RenderObject objRock;
+SR::RenderObject objSpot;
+
 SR::VertexShader* LightVertexShader;
 SR::FragmentShader* LightFragmentShader;
 
@@ -47,9 +52,39 @@ SR::VertexShader* UnlitVertexShader;
 SR::FragmentShader* UnlitFragmentShader;
 
 SR::Texture texture1;
+SR::Texture rock_Texture;
+SR::Texture spot_Texture;
+SR::Texture GIS_Texture;
+
+std::vector<std::string> SplitString(std::string srcString, char splitChar);
+
+void LoadGISImage(void** data, int& width, int& height)
+{
+    std::string filePath = "E:\\CodeData\\GIS\\bi-image_end.txt";
+    std::ifstream fileStream;
+    fileStream.open(filePath, std::ios::in);
+    std::string line;
+    width = 480;
+    height = 360;
+    char* _data = new char[width * height];
+    int row = 0;
+    while (std::getline(fileStream, line))
+    {
+        auto splitLine = SplitString(line, ',');
+        for (int i = 0; i < splitLine.size(); i++)
+        {
+            _data[row * width + i] = atoi(splitLine[i].c_str());
+        }
+        row++;
+    }
+    *data = _data;
+}
 
 void OnInit(HWND hWnd, LONG width, LONG height)
 {
+    char* dataOfGis;
+    int widthOfData, heightOfData;
+    //LoadGISImage((void**) & dataOfGis, widthOfData, heightOfData);
     LightVertexShader = new SR::Light_VShader;
     LightFragmentShader = new SR::Light_FShader;
 
@@ -58,6 +93,7 @@ void OnInit(HWND hWnd, LONG width, LONG height)
 
     SR::Renderer* render = SR::Renderer::Create();
     std::shared_ptr<SR::Camera> mainCamera(new SR::Camera());
+    mainCamera->m_transform.m_position = { 0, 0, 0 };
     mainCamera->aspect = (float)width / height;
     render->SetCamera(mainCamera);
     render->Init(width, height);
@@ -67,33 +103,28 @@ void OnInit(HWND hWnd, LONG width, LONG height)
     loadBmp(".\\assets\\chess.bmp", bmpinfo, data);
     texture1.BufferData(data, bmpinfo->bmiHeader.biWidth, bmpinfo->bmiHeader.biHeight, bmpinfo->bmiHeader.biBitCount / 8);
     LightFragmentShader->SetTexture(&texture1);
+    UnlitFragmentShader->SetTexture(&texture1);
+
+    loadBmp(".\\assets\\rock.bmp", bmpinfo, data);
+    rock_Texture.BufferData(data, bmpinfo->bmiHeader.biWidth, bmpinfo->bmiHeader.biHeight, bmpinfo->bmiHeader.biBitCount / 8);
+
+    loadBmp(".\\assets\\spot_texture.bmp", bmpinfo, data);
+    spot_Texture.BufferData(data, bmpinfo->bmiHeader.biWidth, bmpinfo->bmiHeader.biHeight, bmpinfo->bmiHeader.biBitCount / 8);
+
+    //GIS_Texture.BufferData(dataOfGis, widthOfData, heightOfData, 1);
 
     {
-        SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube.obj");
+        SR::Model_Obj modelCube = SR::LoadObjFromFile(".\\assets\\cube2.obj");
         objCube.m_ib = modelCube.ib;
         objCube.m_vb = modelCube.vb;
         objCube.m_name = modelCube.name;
 
-        SR::Translation cubeTranslation;
+        SR::Transform cubeTranslation;
         cubeTranslation.m_position = { 0, 0, 7 };
-        cubeTranslation.m_rotation = { 0, 0, 0 };
+        cubeTranslation.m_rotation = { 45, 45, 0 };
         cubeTranslation.m_scaling = { 1, 1, 1 };
 
-        objCube.m_translation = cubeTranslation;
-    }
-
-    {
-        SR::Model_Obj modelMt = SR::LoadObjFromFile(".\\assets\\mt2.obj");
-        objmt.m_ib = modelMt.ib;
-        objmt.m_vb = modelMt.vb;
-        objmt.m_name = modelMt.name;
-
-        SR::Translation mtTranslation;
-        mtTranslation.m_position = { 0, 0, 3 };
-        mtTranslation.m_rotation = { 0, 0, 0 };
-        mtTranslation.m_scaling = { 1, 1, 1 };
-
-        objmt.m_translation = mtTranslation;
+        objCube.m_transform = cubeTranslation;
     }
 
     {
@@ -102,27 +133,84 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objPlane.m_vb = modelPlane.vb;
         objPlane.m_name = modelPlane.name;
 
-        SR::Translation mtTranslation;
-        mtTranslation.m_position = { 0, -2, 10 };
-        mtTranslation.m_rotation = { 0, 0, 0 };
-        mtTranslation.m_scaling = { 3, 1, 5 };
+        SR::Transform PlaneTranslation;
+        PlaneTranslation.m_position = { 0, 0, 3 };
+        PlaneTranslation.m_rotation = { 90, 0, 0 };
+        PlaneTranslation.m_scaling = { 1, 1, 1 };
 
-        objPlane.m_translation = mtTranslation;
+        objPlane.m_transform = PlaneTranslation;
     }
 
     {
 
-        SR::Model_Obj modelCylinder = SR::LoadObjFromFile(".\\assets\\cylinder.obj");
+        SR::Model_Obj modelCylinder = SR::LoadObjFromFile(".\\assets\\cylinder2.obj");
         objCylinder.m_ib = modelCylinder.ib;
         objCylinder.m_vb = modelCylinder.vb;
         objCylinder.m_name = modelCylinder.name;
 
-        SR::Translation mtTranslation;
-        mtTranslation.m_position = { 0, 0, 7 };
-        mtTranslation.m_rotation = { 0, 0, 0 };
-        mtTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform CylinderTranslation;
+        CylinderTranslation.m_position = { 0, 0, 7 };
+        CylinderTranslation.m_rotation = { 45, 45, 10 };
+        CylinderTranslation.m_scaling = { 1, 1, 1 };
 
-        objCylinder.m_translation = mtTranslation;
+        objCylinder.m_transform = CylinderTranslation;
+    }
+
+    {
+
+        SR::Model_Obj modelCat = SR::LoadObjFromFile(".\\assets\\cat2.obj");
+        objCat.m_ib = modelCat.ib;
+        objCat.m_vb = modelCat.vb;
+        objCat.m_name = modelCat.name;
+
+        SR::Transform CatTranslation;
+        CatTranslation.m_position = { 0, 0, 4 };
+        CatTranslation.m_rotation = { 0, 45, 0 };
+        CatTranslation.m_scaling = { 1, 1, 1 };
+
+        objCat.m_transform = CatTranslation;
+    }
+
+    {
+        SR::Model_Obj modelTorus= SR::LoadObjFromFile(".\\assets\\torus2.obj");
+        objTorus.m_ib = modelTorus.ib;
+        objTorus.m_vb = modelTorus.vb;
+        objTorus.m_name = modelTorus.name;
+
+        SR::Transform TorusTranslation;
+        TorusTranslation.m_position = { 0, 0, 4 };
+        TorusTranslation.m_rotation = { 45, 0, 45 };
+        TorusTranslation.m_scaling = { 1, 1, 1 };
+
+        objTorus.m_transform = TorusTranslation;
+    }
+
+    {
+        SR::Model_Obj modelRock = SR::LoadObjFromFile(".\\assets\\rock.obj");
+        objRock.m_ib = modelRock.ib;
+        objRock.m_vb = modelRock.vb;
+        objRock.m_name = modelRock.name;
+
+        SR::Transform RockTranslation;
+        RockTranslation.m_position = { 0, 0, 7 };
+        RockTranslation.m_rotation = { 30, 0, 30 };
+        RockTranslation.m_scaling = { 1, 1, 1 };
+
+        objRock.m_transform = RockTranslation;
+    }
+
+    {
+        SR::Model_Obj modelSpot = SR::LoadObjFromFile(".\\assets\\spot.obj");
+        objSpot.m_ib = modelSpot.ib;
+        objSpot.m_vb = modelSpot.vb;
+        objSpot.m_name = modelSpot.name;
+
+        SR::Transform SpotTranslation;
+        SpotTranslation.m_position = { 0, 0, 3 };
+        SpotTranslation.m_rotation = { 0, 45, 0 };
+        SpotTranslation.m_scaling = { 1, 1, 1 };
+
+        objSpot.m_transform = SpotTranslation;
     }
 }
 
@@ -150,30 +238,68 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
 
 
     float timeInterval = timeNow - lastTime;
-    objCube.m_translation.m_rotation.x += timeInterval / 20.0f;
-    objCube.m_translation.m_rotation.y += timeInterval / 9.0f;
+    objCube.m_transform.m_rotation.x += timeInterval / 20.0f;
+    objCube.m_transform.m_rotation.y += timeInterval / 9.0f;
 
 
-    objmt.m_translation.m_rotation.x += timeInterval / 6.0f;
-    objmt.m_translation.m_rotation.y += timeInterval / 25.0f;
+    //objmt.m_translation.m_rotation.x += timeInterval / 6.0f;
+    //objmt.m_translation.m_rotation.y += timeInterval / 10.0f;
 
 
-    objPlane.m_translation.m_rotation.x += timeInterval / 6.0f;
-    objPlane.m_translation.m_rotation.y += timeInterval / 25.0f;
+    //objPlane.m_translation.m_rotation.x += timeInterval / 6.0f;
+    //objPlane.m_translation.m_rotation.y += timeInterval / 25.0f;
 
 
-    objCylinder.m_translation.m_rotation.x += timeInterval / 6.0f;
-    objCylinder.m_translation.m_rotation.y += timeInterval / 25.0f;
+    //objCylinder.m_translation.m_rotation.x += timeInterval / 5.0f;
+    //objCylinder.m_translation.m_rotation.y += timeInterval / 10.0f;
 
-    //SR::Renderer::GetInstance()->GetCamera()->m_translation.m_rotation.z += timeInterval / 20.0f;
+
+    //objCat.m_translation.m_rotation.y += timeInterval / 10.0f;
+
+
+    objRock.m_transform.m_rotation.x += timeInterval / 15.0f;
+    objRock.m_transform.m_rotation.y += timeInterval / 10.0f;
+
+
+    objTorus.m_transform.m_rotation.y += timeInterval / 10.0f;
+
+
+    objSpot.m_transform.m_rotation.y += timeInterval / 10.0f;
+
+    //SR::Renderer::GetInstance()->GetCamera()->m_transform.m_rotation.z += timeInterval / 20.0f;
     SR::Renderer::GetInstance()->GetCamera()->ClearColor();
     SR::Renderer::GetInstance()->GetCamera()->ClearZBuffer();
+    //LightFragmentShader->SetTexture(&texture1);
+    //UnlitFragmentShader->SetTexture(&texture1);
+    //UnlitFragmentShader->SetTexture(&rock_Texture);
+    //UnlitFragmentShader->SetTexture(&GIS_Texture);
+    // Unlit 
+    {
+        //SR::Renderer::GetInstance()->OnRender(objmt, *LightVertexShader, *LightFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objCube, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objCylinder, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objPlane, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objCat, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objTorus, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objRock, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objSpot, *UnlitVertexShader, *UnlitFragmentShader);
+    }
+    // Lit
+    {
+        //SR::Renderer::GetInstance()->OnRender(objCube, *UnlitVertexShader, *UnlitFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objCube, *LightVertexShader, *LightFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objCylinder, *LightVertexShader, *LightFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objPlane, *LightVertexShader, *LightFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objCat, *LightVertexShader, *LightFragmentShader);
+        //SR::Renderer::GetInstance()->OnRender(objTorus, *LightVertexShader, *LightFragmentShader);
+        //LightFragmentShader->SetTexture(&rock_Texture);
+        //UnlitFragmentShader->SetTexture(&rock_Texture);
+        //SR::Renderer::GetInstance()->OnRender(objRock, *LightVertexShader, *LightFragmentShader);
 
-    SR::Renderer::GetInstance()->OnRender(objmt, *LightVertexShader, *LightFragmentShader);
-    //SR::Renderer::GetInstance()->OnRender(objCube, *LightVertexShader, *LightFragmentShader);
-    //SR::Renderer::GetInstance()->OnRender(objCylinder, *LightVertexShader, *LightFragmentShader);
-    //SR::Renderer::GetInstance()->OnRender(objPlane, *LightVertexShader, *LightFragmentShader);
-
+        LightFragmentShader->SetTexture(&spot_Texture);
+        //UnlitFragmentShader->SetTexture(&spot_Texture);
+        SR::Renderer::GetInstance()->OnRender(objSpot, *LightVertexShader, *LightFragmentShader);
+    }
     auto frameBuffer = SR::Renderer::GetInstance()->GetCamera()->GetFrameBuffer();
     const void* backColorData = frameBuffer->GetColorData();
 

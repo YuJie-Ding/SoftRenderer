@@ -6,17 +6,13 @@
 namespace SR
 {
 
-	class DLL_API Translation
+	class DLL_API Transform
 	{
 	public:
-		Translation();
-		Translation(Vector3f position, Vector3f rotation, Vector3f scaling);
+		Transform();
+		Transform(Vector3f position, Vector3f rotation, Vector3f scaling);
 
-		Translation& operator=(const Translation& t);
-
-		//void Move();
-		//void Rotate();
-		//void Scale();
+		Transform& operator=(const Transform& t);
 
 	public:
 		Vector3f m_position;

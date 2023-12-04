@@ -26,7 +26,7 @@ namespace SR
 			const Vector4f& normal = { 0, 0, 0, 0 },
 			const Vector4f& uv = { 0, 0, 0, 0 },
 			const Vector4c& color = { 0, 0, 0, 0 });
-		Fragment(const Vertex& vertex);
+		Fragment(const DefaultVertexAttribute& vertex);
 
 
 

@@ -3,6 +3,7 @@
 #include "core.h"
 #include "Render/RenderObject.h"
 #include "Render/VertexShader.h"
+#include "Render/VertexAttribute.h"
 #include "Render/FrameBuffer.h"
 #include "Render/FragmentShader.h"
 #include "Render/Texture.h"
@@ -50,7 +51,7 @@ namespace SR
 			:m_Camera(nullptr)
 		{ }
 
-		Fragment** Rasterize(SR::Vertex* v1, SR::Vertex* v2, SR::Vertex* v3,
+		Fragment** Rasterize(SR::DefaultVertexAttribute* v1, SR::DefaultVertexAttribute* v2, SR::DefaultVertexAttribute* v3,
 			uint32_t*& fragsIndex_, uint32_t& row_);
 
 	private:

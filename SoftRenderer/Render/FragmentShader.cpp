@@ -10,26 +10,27 @@ SR::Fragment::Fragment(const Vector4f& position, const Vector4f& normal, const V
 	this->color = color;
 }
 
-SR::Fragment::Fragment(const Vertex& vertex)
+SR::Fragment::Fragment(const DefaultVertexAttribute& vertex)
 {
 	this->position = vertex.position;
 	this->normal = vertex.normal;
 	this->uv = vertex.uv;
-	this->color = vertex.color;
 	this->m_position = vertex.m_position;
+	this->color = vertex.color;
 }
 
 SR::Fragment SR::FragmentShader::Execute(const Fragment& in) const
 {
 	Fragment frag;
+	Vector4f color;
 	Vector3f normal = in.normal;
 	Vector3f normal_Normalize = normal.Normalize();
-	frag.color.r = (uint32_t)((normal_Normalize.x + 1) / 2 * 255);
-	frag.color.g = (uint32_t)((normal_Normalize.y + 1) / 2 * 255);
-	frag.color.b = (uint32_t)((normal_Normalize.z + 1) / 2 * 255);
-	//frag.color = m_texture1->tex(in.uv.x, in.uv.y);
-	//frag.color.r = frag.color.r;
-	//frag.color.g = frag.color.g;
-	//frag.color.b = frag.color.b;
+	//color = in.uv;
+	//color = normal_Normalize;
+	//color = (color + 1) * 0.5;
+	color = m_texture1->tex(in.uv.x, in.uv.y);
+	//color = { 1.0, 1.0, 1.0, 1.0 };
+	color = color * 255;
+	frag.color = Vector4f(color.x, color.x, color.x, color.x);
 	return frag;
 }

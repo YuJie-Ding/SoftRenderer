@@ -4,7 +4,6 @@ vendor/
 bin/
 bin-int/
 softRasterizer-main/
-Sandbox/assets
 *.zip
 *.doc
 
@@ -21,7 +20,6 @@ Sandbox/assets
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -48,3 +46,4 @@ Sandbox/assets
 *.app
 
 
+/论文

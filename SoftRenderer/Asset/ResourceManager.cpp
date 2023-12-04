@@ -7,7 +7,7 @@
 #include <fstream>
 #include <vector>
 
-std::vector<std::string> SplitString(std::string srcString, char splitChar)
+DLL_API std::vector<std::string> SplitString(std::string srcString, char splitChar)
 {
 	std::istringstream tempStringStream(srcString);
 	std::string token;

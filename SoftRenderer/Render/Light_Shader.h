@@ -7,7 +7,7 @@ namespace SR
 {
 	class DLL_API Light_VShader : public VertexShader
 	{
-		virtual Vertex Execute(const Vertex& in) const override;
+		virtual DefaultVertexAttribute Execute(const DefaultVertexAttribute& in) const override;
 	};
 
 

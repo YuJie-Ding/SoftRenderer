@@ -14,13 +14,13 @@ namespace SR
 	public:
 		RenderObject();
 		RenderObject(std::string name, std::shared_ptr<VertexBuffer> vb,
-			std::shared_ptr<IndexBuffer> ib, const Translation&& translation);
+			std::shared_ptr<IndexBuffer> ib, const Transform&& translation);
 
 	public:
 		std::string m_name;
 		std::shared_ptr<VertexBuffer> m_vb;
 		std::shared_ptr<IndexBuffer> m_ib;
-		Translation m_translation;
+		Transform m_transform;
 	};
 
 }

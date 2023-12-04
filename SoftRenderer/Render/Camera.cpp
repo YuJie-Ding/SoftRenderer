@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-SR::Camera::Camera(Translation translation, float aspect, float FOV, float near, float far)
-	:m_translation(translation), aspect(aspect), FOV(FOV), m_near(near), m_far(far)
+SR::Camera::Camera(Transform translation, float aspect, float FOV, float near, float far)
+	:m_transform(translation), aspect(aspect), FOV(FOV), m_near(near), m_far(far)
 {
 	m_frameBuffer = nullptr;
 }

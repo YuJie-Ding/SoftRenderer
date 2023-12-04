@@ -43,24 +43,21 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 	if (m_Camera->m_frameBuffer->GetWidth() == 0 || m_Camera->m_frameBuffer->GetHeight() == 0)
 		return nullptr;
 
-	SR::Matrix4x4f model_Mat = SR::Matrix4x4f::Translation(obj.m_translation.m_position) *
-		SR::Matrix4x4f::Rotation(obj.m_translation.m_rotation.z, SR::Axis::Axis_Z) *
-		SR::Matrix4x4f::Rotation(obj.m_translation.m_rotation.y, SR::Axis::Axis_Y) *
-		SR::Matrix4x4f::Rotation(obj.m_translation.m_rotation.x, SR::Axis::Axis_X) *
-		SR::Matrix4x4f::Scale(obj.m_translation.m_scaling);
-	SR::Matrix4x4f view_Mat = SR::Matrix4x4f::Translation(-m_Camera->m_translation.m_position)*
-		SR::Matrix4x4f::Rotation(-m_Camera->m_translation.m_rotation.z, SR::Axis::Axis_Z) *
-		SR::Matrix4x4f::Rotation(-m_Camera->m_translation.m_rotation.y, SR::Axis::Axis_Y) *
-		SR::Matrix4x4f::Rotation(-m_Camera->m_translation.m_rotation.x, SR::Axis::Axis_X);
+	SR::Matrix4x4f model_Mat = SR::Matrix4x4f::Translation(obj.m_transform.m_position) *
+		SR::Matrix4x4f::Rotation(obj.m_transform.m_rotation.z, SR::Axis::Axis_Z) *
+		SR::Matrix4x4f::Rotation(obj.m_transform.m_rotation.y, SR::Axis::Axis_Y) *
+		SR::Matrix4x4f::Rotation(obj.m_transform.m_rotation.x, SR::Axis::Axis_X) *
+		SR::Matrix4x4f::Scale(obj.m_transform.m_scaling);
+	SR::Matrix4x4f view_Mat = SR::Matrix4x4f::Translation(-m_Camera->m_transform.m_position)*
+		SR::Matrix4x4f::Rotation(-m_Camera->m_transform.m_rotation.z, SR::Axis::Axis_Z) *
+		SR::Matrix4x4f::Rotation(-m_Camera->m_transform.m_rotation.y, SR::Axis::Axis_Y) *
+		SR::Matrix4x4f::Rotation(-m_Camera->m_transform.m_rotation.x, SR::Axis::Axis_X);
 	SR::Matrix4x4f proj_Mat = SR::GetProjMatrix(m_Camera->aspect, m_Camera->FOV, m_Camera->m_near, m_Camera->m_far);
 	vShader.SetMVP(model_Mat, view_Mat, proj_Mat);
 
-
-	//m_Camera->m_frameBuffer->ClearCenterColor();
-	//m_Camera->m_frameBuffer->ClearZBuffer();
 	std::shared_ptr<VertexBuffer> vb = obj.m_vb;
 	std::shared_ptr<IndexBuffer> ib = obj.m_ib;
-	SR::Vertex *result = new SR::Vertex[ib->GetCount()];
+	SR::DefaultVertexAttribute *result = new SR::DefaultVertexAttribute[ib->GetCount()];
 
 	for (unsigned int i = 0; i < ib->GetCount(); i++)
 	{
@@ -85,16 +82,6 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 		}
 		if ((i + 1) % 3 == 0)
 		{
-			// 裁剪
-
-			// 背面剔除
-			//Vector2f v1 = result[i - 1].m_position - result[i - 2].m_position;
-			//Vector2f v2 = result[i].m_position - result[i - 2].m_position;
-			//if ((v1.x * v2.y - v1.y * v2.x) > 0)
-			//{
-			//	continue;
-			//}
-
 			// 光栅化和插值
 			uint32_t* fragsIndex;
 			uint32_t row;
@@ -137,14 +124,14 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 
 namespace SR
 {
-	Fragment** Renderer::Rasterize(SR::Vertex* v1, SR::Vertex* v2, SR::Vertex* v3,
+	Fragment** Renderer::Rasterize(SR::DefaultVertexAttribute* v1, SR::DefaultVertexAttribute* v2, SR::DefaultVertexAttribute* v3,
 		uint32_t*& fragsIndex_, uint32_t& row_)
 	{
 		Fragment** frags;
 		uint32_t* fragsIndex;
 		uint32_t row;
 
-		auto swap = [](Vertex*& v1, Vertex*& v2)
+		auto swap = [](DefaultVertexAttribute*& v1, DefaultVertexAttribute*& v2)
 		{
 			auto temp = v1;
 			v1 = v2;
@@ -179,10 +166,10 @@ namespace SR
 					sqrt(pow(v1->m_position.x - v3->m_position.x, 2) + pow(v1->m_position.y - v3->m_position.y, 2)); 
 				float weight2 = sqrt(pow(x2 - v1->m_position.x, 2) + pow(y - v1->m_position.y, 2)) /
 					sqrt(pow(v1->m_position.x - v2->m_position.x, 2) + pow(v1->m_position.y - v2->m_position.y, 2));
-				Vertex v1_l = Lerp(*v1, *v3, weight1);
+				DefaultVertexAttribute v1_l = Lerp(*v1, *v3, weight1);
 				v1_l.m_position.x = (int)x1;
 				v1_l.m_position.y = y;
-				Vertex v2_l = Lerp(*v1, *v2, weight2);
+				DefaultVertexAttribute v2_l = Lerp(*v1, *v2, weight2);
 				v2_l.m_position.x = (int)x2;
 				v2_l.m_position.y = y;
 				if ((int)v1_l.m_position.x > (int)v2_l.m_position.x)
@@ -221,10 +208,10 @@ namespace SR
 					sqrt(pow(v1->m_position.x - v3->m_position.x, 2) + pow(v1->m_position.y - v3->m_position.y, 2));
 				float weight2 = sqrt(pow(x3 - v2->m_position.x, 2) + pow(y - v2->m_position.y, 2)) /
 					sqrt(pow(v3->m_position.x - v2->m_position.x, 2) + pow(v3->m_position.y - v2->m_position.y, 2));
-				Vertex v1_l = Lerp(*v1, *v3, weight1);
+				DefaultVertexAttribute v1_l = Lerp(*v1, *v3, weight1);
 				v1_l.m_position.x = (int)x1;
 				v1_l.m_position.y = y;
-				Vertex v2_l = Lerp(*v2, *v3, weight2);
+				DefaultVertexAttribute v2_l = Lerp(*v2, *v3, weight2);
 				v2_l.m_position.x = (int)x3;
 				v2_l.m_position.y = y;
 				if ((int)v1_l.m_position.x > (int)v2_l.m_position.x)
@@ -264,7 +251,7 @@ namespace SR
 
 	Vector4f GetWorldCameraPos()
 	{
-		return Renderer::GetInstance()->GetCamera()->m_translation.m_position;
+		return Renderer::GetInstance()->GetCamera()->m_transform.m_position;
 	}
 
 }

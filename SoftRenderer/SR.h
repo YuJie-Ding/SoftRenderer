@@ -6,7 +6,7 @@
 
 #include "Render/Camera.h"
 #include "Render/RenderObject.h"
-#include "Render/Translation.h"
+#include "Render/Transform.h"
 #include "Render/VertexShader.h"
 #include "Render/FragmentShader.h"
 #include "Render/VertexAttribute.h"

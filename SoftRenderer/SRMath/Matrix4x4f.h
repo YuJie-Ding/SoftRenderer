@@ -36,7 +36,7 @@ namespace SR
 		// 返回单位矩阵
 		static Matrix4x4f Indentity();
 		// 返回平移矩阵
-		static Matrix4x4f Translation(const Vector3f& vec);
+		static Matrix4x4f Transform(const Vector3f& vec);
 		// 返回旋转矩阵
 		static Matrix4x4f Rotation(float angle, Axis axis);
 		// 返回缩放矩阵

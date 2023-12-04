@@ -3,7 +3,7 @@
 #include "core.h"
 #include "Buffer.h"
 #include "FrameBuffer.h"
-#include "Translation.h"
+#include "Transform.h"
 #include <memory>
 
 namespace SR
@@ -12,7 +12,7 @@ namespace SR
 	class DLL_API Camera
 	{
 	public:
-		Camera(Transform translation = { {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {1.0, 1.0, 1.0} },
+		Camera(Transform transform = { {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {1.0, 1.0, 1.0} },
 			float aspect = 1, float FOV = 60.0, float near = 0.3, float far = 1000);
 
 		void SetClearColor(char r, char g, char b, char a);

@@ -119,12 +119,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objCube.m_vb = modelCube.vb;
         objCube.m_name = modelCube.name;
 
-        SR::Transform cubeTranslation;
-        cubeTranslation.m_position = { 0, 0, 7 };
-        cubeTranslation.m_rotation = { 45, 45, 0 };
-        cubeTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform cubeTransform;
+        cubeTransform.m_position = { 0, 0, 7 };
+        cubeTransform.m_rotation = { 45, 45, 0 };
+        cubeTransform.m_scaling = { 1, 1, 1 };
 
-        objCube.m_transform = cubeTranslation;
+        objCube.m_transform = cubeTransform;
     }
 
     {
@@ -133,12 +133,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objPlane.m_vb = modelPlane.vb;
         objPlane.m_name = modelPlane.name;
 
-        SR::Transform PlaneTranslation;
-        PlaneTranslation.m_position = { 0, 0, 3 };
-        PlaneTranslation.m_rotation = { 90, 0, 0 };
-        PlaneTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform PlaneTransform;
+        PlaneTransform.m_position = { 0, 0, 3 };
+        PlaneTransform.m_rotation = { 90, 0, 0 };
+        PlaneTransform.m_scaling = { 1, 1, 1 };
 
-        objPlane.m_transform = PlaneTranslation;
+        objPlane.m_transform = PlaneTransform;
     }
 
     {
@@ -148,12 +148,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objCylinder.m_vb = modelCylinder.vb;
         objCylinder.m_name = modelCylinder.name;
 
-        SR::Transform CylinderTranslation;
-        CylinderTranslation.m_position = { 0, 0, 7 };
-        CylinderTranslation.m_rotation = { 45, 45, 10 };
-        CylinderTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform CylinderTransform;
+        CylinderTransform.m_position = { 0, 0, 7 };
+        CylinderTransform.m_rotation = { 45, 45, 10 };
+        CylinderTransform.m_scaling = { 1, 1, 1 };
 
-        objCylinder.m_transform = CylinderTranslation;
+        objCylinder.m_transform = CylinderTransform;
     }
 
     {
@@ -163,12 +163,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objCat.m_vb = modelCat.vb;
         objCat.m_name = modelCat.name;
 
-        SR::Transform CatTranslation;
-        CatTranslation.m_position = { 0, 0, 4 };
-        CatTranslation.m_rotation = { 0, 45, 0 };
-        CatTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform CatTransform;
+        CatTransform.m_position = { 0, 0, 4 };
+        CatTransform.m_rotation = { 0, 45, 0 };
+        CatTransform.m_scaling = { 1, 1, 1 };
 
-        objCat.m_transform = CatTranslation;
+        objCat.m_transform = CatTransform;
     }
 
     {
@@ -177,12 +177,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objTorus.m_vb = modelTorus.vb;
         objTorus.m_name = modelTorus.name;
 
-        SR::Transform TorusTranslation;
-        TorusTranslation.m_position = { 0, 0, 4 };
-        TorusTranslation.m_rotation = { 45, 0, 45 };
-        TorusTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform TorusTransform;
+        TorusTransform.m_position = { 0, 0, 4 };
+        TorusTransform.m_rotation = { 45, 0, 45 };
+        TorusTransform.m_scaling = { 1, 1, 1 };
 
-        objTorus.m_transform = TorusTranslation;
+        objTorus.m_transform = TorusTransform;
     }
 
     {
@@ -191,12 +191,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objRock.m_vb = modelRock.vb;
         objRock.m_name = modelRock.name;
 
-        SR::Transform RockTranslation;
-        RockTranslation.m_position = { 0, 0, 7 };
-        RockTranslation.m_rotation = { 30, 0, 30 };
-        RockTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform RockTransform;
+        RockTransform.m_position = { 0, 0, 7 };
+        RockTransform.m_rotation = { 30, 0, 30 };
+        RockTransform.m_scaling = { 1, 1, 1 };
 
-        objRock.m_transform = RockTranslation;
+        objRock.m_transform = RockTransform;
     }
 
     {
@@ -205,12 +205,12 @@ void OnInit(HWND hWnd, LONG width, LONG height)
         objSpot.m_vb = modelSpot.vb;
         objSpot.m_name = modelSpot.name;
 
-        SR::Transform SpotTranslation;
-        SpotTranslation.m_position = { 0, 0, 3 };
-        SpotTranslation.m_rotation = { 0, 45, 0 };
-        SpotTranslation.m_scaling = { 1, 1, 1 };
+        SR::Transform SpotTransform;
+        SpotTransform.m_position = { 0, 0, 3 };
+        SpotTransform.m_rotation = { 0, 45, 0 };
+        SpotTransform.m_scaling = { 1, 1, 1 };
 
-        objSpot.m_transform = SpotTranslation;
+        objSpot.m_transform = SpotTransform;
     }
 }
 
@@ -242,19 +242,19 @@ void OnWinPaint(HDC hdc, unsigned long long timeNow, unsigned long long lastTime
     objCube.m_transform.m_rotation.y += timeInterval / 9.0f;
 
 
-    //objmt.m_translation.m_rotation.x += timeInterval / 6.0f;
-    //objmt.m_translation.m_rotation.y += timeInterval / 10.0f;
+    //objmt.m_Transform.m_rotation.x += timeInterval / 6.0f;
+    //objmt.m_Transform.m_rotation.y += timeInterval / 10.0f;
 
 
-    //objPlane.m_translation.m_rotation.x += timeInterval / 6.0f;
-    //objPlane.m_translation.m_rotation.y += timeInterval / 25.0f;
+    //objPlane.m_Transform.m_rotation.x += timeInterval / 6.0f;
+    //objPlane.m_Transform.m_rotation.y += timeInterval / 25.0f;
 
 
-    //objCylinder.m_translation.m_rotation.x += timeInterval / 5.0f;
-    //objCylinder.m_translation.m_rotation.y += timeInterval / 10.0f;
+    //objCylinder.m_Transform.m_rotation.x += timeInterval / 5.0f;
+    //objCylinder.m_Transform.m_rotation.y += timeInterval / 10.0f;
 
 
-    //objCat.m_translation.m_rotation.y += timeInterval / 10.0f;
+    //objCat.m_Transform.m_rotation.y += timeInterval / 10.0f;
 
 
     objRock.m_transform.m_rotation.x += timeInterval / 15.0f;

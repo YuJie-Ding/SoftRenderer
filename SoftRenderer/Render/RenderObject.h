@@ -3,7 +3,7 @@
 
 #include "core.h"
 #include "Buffer.h"
-#include "Translation.h"
+#include "Transform.h"
 #include <memory>
 
 namespace SR
@@ -14,7 +14,7 @@ namespace SR
 	public:
 		RenderObject();
 		RenderObject(std::string name, std::shared_ptr<VertexBuffer> vb,
-			std::shared_ptr<IndexBuffer> ib, const Transform&& translation);
+			std::shared_ptr<IndexBuffer> ib, const Transform&& Transform);
 
 	public:
 		std::string m_name;

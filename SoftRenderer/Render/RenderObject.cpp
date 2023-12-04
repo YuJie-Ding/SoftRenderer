@@ -9,12 +9,12 @@ SR::RenderObject::RenderObject()
 }
 
 SR::RenderObject::RenderObject(std::string name, std::shared_ptr<VertexBuffer> vb,
-	std::shared_ptr<IndexBuffer> ib, const Transform&& translation)
+	std::shared_ptr<IndexBuffer> ib, const Transform&& Transform)
 {
 	m_name = name;
 	m_vb = vb;
 	m_ib = ib;
-	m_transform = translation;
+	m_transform = Transform;
 }
 
 

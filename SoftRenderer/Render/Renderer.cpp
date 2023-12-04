@@ -43,12 +43,12 @@ const std::shared_ptr<SR::FrameBuffer> SR::Renderer::OnRender(RenderObject& obj,
 	if (m_Camera->m_frameBuffer->GetWidth() == 0 || m_Camera->m_frameBuffer->GetHeight() == 0)
 		return nullptr;
 
-	SR::Matrix4x4f model_Mat = SR::Matrix4x4f::Translation(obj.m_transform.m_position) *
+	SR::Matrix4x4f model_Mat = SR::Matrix4x4f::Transform(obj.m_transform.m_position) *
 		SR::Matrix4x4f::Rotation(obj.m_transform.m_rotation.z, SR::Axis::Axis_Z) *
 		SR::Matrix4x4f::Rotation(obj.m_transform.m_rotation.y, SR::Axis::Axis_Y) *
 		SR::Matrix4x4f::Rotation(obj.m_transform.m_rotation.x, SR::Axis::Axis_X) *
 		SR::Matrix4x4f::Scale(obj.m_transform.m_scaling);
-	SR::Matrix4x4f view_Mat = SR::Matrix4x4f::Translation(-m_Camera->m_transform.m_position)*
+	SR::Matrix4x4f view_Mat = SR::Matrix4x4f::Transform(-m_Camera->m_transform.m_position)*
 		SR::Matrix4x4f::Rotation(-m_Camera->m_transform.m_rotation.z, SR::Axis::Axis_Z) *
 		SR::Matrix4x4f::Rotation(-m_Camera->m_transform.m_rotation.y, SR::Axis::Axis_Y) *
 		SR::Matrix4x4f::Rotation(-m_Camera->m_transform.m_rotation.x, SR::Axis::Axis_X);

@@ -124,7 +124,7 @@ Matrix4x4f SR::Matrix4x4f::Indentity()
 	return m;
 }
 
-Matrix4x4f SR::Matrix4x4f::Translation(const Vector3f& vec)
+Matrix4x4f SR::Matrix4x4f::Transform(const Vector3f& vec)
 {
 	Matrix4x4f m = Indentity();
 	m[0][3] = vec.x;
